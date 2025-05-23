@@ -1,0 +1,21 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Payment.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Xóa thanh toán</h1>
+@if (Model.Payment != null)
+{
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa thanh toán <strong>@Model.Payment.PaymentId</strong>?
+    </div>
+    <form method="post">
+        <input type="hidden" asp-for="Payment.PaymentId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="/admin/payment" class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy thanh toán.</div>
+}

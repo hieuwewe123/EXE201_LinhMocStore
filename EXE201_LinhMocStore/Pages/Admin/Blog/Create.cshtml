@@ -1,0 +1,18 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Blog.CreateModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Thêm bài viết</h1>
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Blog.Title" class="form-label"></label>
+        <input asp-for="Blog.Title" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Blog.Content" class="form-label"></label>
+        <textarea asp-for="Blog.Content" class="form-control" rows="6"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a href="/admin/blog" class="btn btn-secondary">Quay lại</a>
+</form>

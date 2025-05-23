@@ -1,0 +1,65 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Product.EditModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Sửa sản phẩm</h1>
+@if (Model.Product != null)
+{
+    <form method="post">
+        <input type="hidden" asp-for="Product.ProductId" />
+        <div class="mb-3">
+            <label asp-for="Product.Name" class="form-label"></label>
+            <input asp-for="Product.Name" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.Price" class="form-label"></label>
+            <input asp-for="Product.Price" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.Quantity" class="form-label"></label>
+            <input asp-for="Product.Quantity" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.Description" class="form-label"></label>
+            <textarea asp-for="Product.Description" class="form-control"></textarea>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.Material" class="form-label"></label>
+            <input asp-for="Product.Material" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.Size" class="form-label"></label>
+            <input asp-for="Product.Size" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.Image" class="form-label">Link ảnh sản phẩm (URL)</label>
+            <input asp-for="Product.Image" class="form-control" placeholder="https://..." />
+            <small class="form-text text-muted">Nhập link ảnh từ internet (ví dụ: https://...)</small>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Ảnh hiện tại</label><br />
+            @if (!string.IsNullOrEmpty(Model.Product.Image))
+            {
+                <img src="@Model.Product.Image" alt="Ảnh sản phẩm" style="max-width:120px;max-height:120px;" />
+            }
+        </div>
+        <div class="mb-3">
+            <label asp-for="Product.CategoryId" class="form-label"></label>
+            <select asp-for="Product.CategoryId" class="form-select">
+                @foreach (var cat in Model.Categories)
+                {
+                    <option value="@cat.CategoryId" selected="@(cat.CategoryId == Model.Product.CategoryId)">
+                        @cat.Name
+                    </option>
+                }
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="/admin/product" class="btn btn-secondary">Quay lại</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy sản phẩm.</div>
+}

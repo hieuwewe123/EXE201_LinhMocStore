@@ -1,0 +1,22 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Category.EditModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Sửa danh mục</h1>
+@if (Model.Category != null)
+{
+    <form method="post">
+        <input type="hidden" asp-for="Category.CategoryId" />
+        <div class="mb-3">
+            <label asp-for="Category.Name" class="form-label"></label>
+            <input asp-for="Category.Name" class="form-control" />
+        </div>
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="/admin/category" class="btn btn-secondary">Quay lại</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy danh mục.</div>
+}

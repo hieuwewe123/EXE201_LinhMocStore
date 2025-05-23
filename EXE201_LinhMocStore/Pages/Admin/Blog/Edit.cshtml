@@ -1,0 +1,26 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Blog.EditModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Sửa bài viết</h1>
+@if (Model.Blog != null)
+{
+    <form method="post">
+        <input type="hidden" asp-for="Blog.BlogId" />
+        <div class="mb-3">
+            <label asp-for="Blog.Title" class="form-label"></label>
+            <input asp-for="Blog.Title" class="form-control" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Blog.Content" class="form-label"></label>
+            <textarea asp-for="Blog.Content" class="form-control" rows="6"></textarea>
+        </div>
+        <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="/admin/blog" class="btn btn-secondary">Quay lại</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy bài viết.</div>
+}

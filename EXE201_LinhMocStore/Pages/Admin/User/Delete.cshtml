@@ -1,0 +1,21 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.User.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Xóa người dùng</h1>
+@if (Model.User != null)
+{
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa người dùng <strong>@Model.User.NormalName</strong>?
+    </div>
+    <form method="post">
+        <input type="hidden" asp-for="User.UserId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="/admin/user" class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy người dùng.</div>
+}

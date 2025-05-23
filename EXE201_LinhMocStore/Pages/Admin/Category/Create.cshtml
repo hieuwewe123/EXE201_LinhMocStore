@@ -1,0 +1,14 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Category.CreateModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Thêm danh mục</h1>
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Category.Name" class="form-label"></label>
+        <input asp-for="Category.Name" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a href="/admin/category" class="btn btn-secondary">Quay lại</a>
+</form>

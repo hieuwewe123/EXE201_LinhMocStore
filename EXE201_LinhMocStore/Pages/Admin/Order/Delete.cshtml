@@ -1,0 +1,21 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Order.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Xóa đơn hàng</h1>
+@if (Model.Order != null)
+{
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa đơn hàng <strong>@Model.Order.OrderId</strong>?
+    </div>
+    <form method="post">
+        <input type="hidden" asp-for="Order.OrderId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="/admin/order" class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy đơn hàng.</div>
+}

@@ -1,0 +1,35 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Order.IndexModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Quản lý đơn hàng</h1>
+<a class="btn btn-primary mb-3" href="/admin/order/create">Thêm đơn hàng</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Khách hàng</th>
+            <th>Ngày đặt</th>
+            <th>Trạng thái</th>
+            <th>Tổng tiền</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var o in Model.Orders)
+        {
+            <tr>
+                <td>@o.OrderId</td>
+                <td>@o.User?.NormalName</td>
+                <td>@o.OrderDate.ToString("yyyy-MM-dd")</td>
+                <td>@o.Status</td>
+                <td>@o.TotalAmount?.ToString("N0")</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="/admin/order/edit?id=@o.OrderId">Sửa</a>
+                    <a class="btn btn-sm btn-danger" href="/admin/order/delete?id=@o.OrderId" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

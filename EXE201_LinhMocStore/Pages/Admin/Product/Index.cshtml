@@ -1,0 +1,46 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Product.IndexModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Quản lý sản phẩm</h1>
+<a class="btn btn-primary mb-3" href="/admin/product/create">Thêm sản phẩm</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Danh mục</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Products)
+        {
+            <tr>
+                <td>@p.ProductId</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(p.Image))
+                    {
+                        var imgSrc = p.Image.StartsWith("http", StringComparison.OrdinalIgnoreCase)
+                        ? p.Image
+                        : ("/images/" + p.Image);
+                        <img src="@imgSrc" alt="@p.Name" style="max-width: 80px; max-height: 80px;" />
+                    }
+                </td>
+
+                <td>@p.Name</td>
+                <td>@p.Price.ToString("N0")</td>
+                <td>@p.Quantity</td>
+                <td>@p.Category?.Name</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="/admin/product/edit?id=@p.ProductId">Sửa</a>
+                    <a class="btn btn-sm btn-danger" href="/admin/product/delete?id=@p.ProductId" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,21 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Blog.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Xóa bài viết</h1>
+@if (Model.Blog != null)
+{
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa bài viết <strong>@Model.Blog.Title</strong>?
+    </div>
+    <form method="post">
+        <input type="hidden" asp-for="Blog.BlogId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="/admin/blog" class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy bài viết.</div>
+}

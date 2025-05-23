@@ -1,0 +1,21 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Category.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Xóa danh mục</h1>
+@if (Model.Category != null)
+{
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa danh mục <strong>@Model.Category.Name</strong>?
+    </div>
+    <form method="post">
+        <input type="hidden" asp-for="Category.CategoryId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="/admin/category" class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy danh mục.</div>
+}

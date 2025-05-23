@@ -1,0 +1,29 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Category.IndexModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Quản lý danh mục</h1>
+<a class="btn btn-primary mb-3" href="/admin/category/create">Thêm danh mục</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên danh mục</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var cat in Model.Categories)
+        {
+            <tr>
+                <td>@cat.CategoryId</td>
+                <td>@cat.Name</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="/admin/category/edit?id=@cat.CategoryId">Sửa</a>
+                    <a class="btn btn-sm btn-danger" href="/admin/category/delete?id=@cat.CategoryId" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,32 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Order.CreateModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Thêm đơn hàng</h1>
+<form method="post">
+    <div class="mb-3">
+        <label asp-for="Order.UserId" class="form-label"></label>
+        <select asp-for="Order.UserId" class="form-select">
+            <option value="">-- Chọn khách hàng --</option>
+            @foreach (var user in Model.Users)
+            {
+                <option value="@user.UserId">@user.NormalName</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Order.OrderDate" class="form-label"></label>
+        <input asp-for="Order.OrderDate" class="form-control" type="date" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Order.Status" class="form-label"></label>
+        <input asp-for="Order.Status" class="form-control" />
+    </div>
+    <div class="mb-3">
+        <label asp-for="Order.TotalAmount" class="form-label"></label>
+        <input asp-for="Order.TotalAmount" class="form-control" type="number" step="0.01" />
+    </div>
+    <button type="submit" class="btn btn-success">Lưu</button>
+    <a href="/admin/order" class="btn btn-secondary">Quay lại</a>
+</form>

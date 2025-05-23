@@ -1,0 +1,21 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Product.DeleteModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Xóa sản phẩm</h1>
+@if (Model.Product != null)
+{
+    <div class="alert alert-warning">
+        Bạn có chắc chắn muốn xóa sản phẩm <strong>@Model.Product.Name</strong>?
+    </div>
+    <form method="post">
+        <input type="hidden" asp-for="Product.ProductId" />
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="/admin/product" class="btn btn-secondary">Hủy</a>
+    </form>
+}
+else
+{
+    <div class="alert alert-danger">Không tìm thấy sản phẩm.</div>
+}

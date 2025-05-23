@@ -1,0 +1,41 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.User.IndexModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Quản lý người dùng</h1>
+<a class="btn btn-primary mb-3" href="/admin/user/create">Thêm người dùng</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tên</th>
+            <th>Email</th>
+            <th>Username</th>
+            <th>Trạng thái</th>
+            <th>Điện thoại</th>
+            <th>Giới tính</th>
+            <th>Ngày sinh</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var u in Model.Users)
+        {
+            <tr>
+                <td>@u.UserId</td>
+                <td>@u.NormalName</td>
+                <td>@u.Email</td>
+                <td>@u.Username</td>
+                <td>@u.Status</td>
+                <td>@u.PhoneNumber</td>
+                <td>@u.Gender</td>
+                <td>@(u.BirthDate?.ToString("yyyy-MM-dd"))</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="/admin/user/edit?id=@u.UserId">Sửa</a>
+                    <a class="btn btn-sm btn-danger" href="/admin/user/delete?id=@u.UserId" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,39 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.Admin.Payment.IndexModel
+@{
+    Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+}
+<h1 class="mt-4">Quản lý thanh toán</h1>
+<a class="btn btn-primary mb-3" href="/admin/payment/create">Thêm thanh toán</a>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Đơn hàng</th>
+            <th>Nội dung</th>
+            <th>Số tiền</th>
+            <th>Mã giao dịch</th>
+            <th>Trạng thái</th>
+            <th>Ngày tạo</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var p in Model.Payments)
+        {
+            <tr>
+                <td>@p.PaymentId</td>
+                <td>@p.OrderId</td>
+                <td>@p.Content</td>
+                <td>@p.Price?.ToString("N0")</td>
+                <td>@p.TransactionCode</td>
+                <td>@p.Status</td>
+                <td>@(p.CreatedAt?.ToString("yyyy-MM-dd HH:mm"))</td>
+                <td>
+                    <a class="btn btn-sm btn-warning" href="/admin/payment/edit?id=@p.PaymentId">Sửa</a>
+                    <a class="btn btn-sm btn-danger" href="/admin/payment/delete?id=@p.PaymentId" onclick="return confirm('Bạn có chắc muốn xóa?')">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
