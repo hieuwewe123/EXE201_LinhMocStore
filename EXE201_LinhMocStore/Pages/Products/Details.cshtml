@@ -1,0 +1,293 @@
+@page "{id:int}"
+@model EXE201_LinhMocStore.Pages.Products.DetailsModel
+@{
+    ViewData["Title"] = $"{Model.Product?.Name} - Linh Mộc Store";
+}
+
+<div class="container py-5">
+    <div class="row">
+        <!-- Ảnh sản phẩm -->
+        <div class="col-lg-6 mb-4">
+            <div class="product-image-container">
+                <img src="@(string.IsNullOrEmpty(Model.Product?.Image) ? "/images/no-image.jpg" : Model.Product.Image)" 
+                     class="img-fluid rounded product-main-image" 
+                     alt="@Model.Product?.Name">
+            </div>
+        </div>
+
+        <!-- Thông tin sản phẩm -->
+        <div class="col-lg-6">
+            <div class="product-details">
+                <h1 class="product-title mb-3">@Model.Product?.Name</h1>
+                
+                <div class="product-price mb-4">
+                    <span class="h2 text-primary">@Model.Product?.Price.ToString("N0") VNĐ</span>
+                </div>
+
+                <div class="product-meta mb-4">
+                    <div class="meta-item">
+                        <i class="fas fa-gem me-2"></i>
+                        <span>Chất liệu: @(string.IsNullOrEmpty(Model.Product?.Material) ? "Không có thông tin" : Model.Product.Material)</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-ruler me-2"></i>
+                        <span>Kích thước: @(string.IsNullOrEmpty(Model.Product?.Size) ? "Không có thông tin" : Model.Product.Size)</span>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-box me-2"></i>
+                        <span>Số lượng còn lại: @Model.Product?.Quantity</span>
+                    </div>
+                </div>
+
+                <div class="product-description mb-4">
+                    <h5>Mô tả sản phẩm</h5>
+                    <p>@(string.IsNullOrEmpty(Model.Product?.Description) ? "Không có mô tả" : Model.Product.Description)</p>
+                </div>
+
+                <form method="post" class="add-to-cart-form">
+                    <input type="hidden" name="productId" value="@Model.Product?.ProductId" />
+                    <div class="quantity-selector mb-4">
+                        <label for="quantity" class="form-label">Số lượng:</label>
+                        <div class="input-group" style="max-width: 150px;">
+                            <button type="button" class="btn btn-outline-secondary" onclick="decreaseQuantity()">-</button>
+                            <input type="number" class="form-control text-center" id="quantity" name="quantity" value="1" min="1" max="@Model.Product?.Quantity">
+                            <button type="button" class="btn btn-outline-secondary" onclick="increaseQuantity()">+</button>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg w-100 mb-3">
+                        <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sản phẩm liên quan -->
+    @if (Model.RelatedProducts?.Any() == true)
+    {
+        <div class="related-products mt-5">
+            <h3 class="section-title mb-4">Sản phẩm liên quan</h3>
+            <div class="row">
+                @foreach (var product in Model.RelatedProducts)
+                {
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100 product-card">
+                            <div class="card-img-wrapper">
+                                <img src="@(string.IsNullOrEmpty(product.Image) ? "/images/no-image.jpg" : product.Image)" 
+                                     class="card-img-top" alt="@product.Name">
+                                <div class="card-img-overlay d-flex align-items-center justify-content-center">
+                                    <a href="/products/details/@product.ProductId" class="btn btn-light btn-sm">Xem chi tiết</a>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <h5 class="card-title">@product.Name</h5>
+                                <p class="card-text text-primary fw-bold">@product.Price.ToString("N0") VNĐ</p>
+                                <a href="/products/details/@product.ProductId" class="btn btn-primary w-100">Xem chi tiết</a>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            padding-top: 76px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .product-image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            background: #fff;
+            padding: 20px;
+        }
+
+        .product-main-image {
+            width: 100%;
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .product-image-container:hover .product-main-image {
+            transform: scale(1.05);
+        }
+
+        .product-title {
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .product-meta {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .meta-item {
+            margin-bottom: 10px;
+            color: #6c757d;
+        }
+
+        .meta-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .product-description {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .quantity-selector .input-group {
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .quantity-selector input {
+            border-left: 0;
+            border-right: 0;
+        }
+
+        .quantity-selector button {
+            width: 40px;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline-secondary {
+            color: #6c757d;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            border: none;
+            padding: 15px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .section-title {
+            position: relative;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100px;
+            height: 3px;
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        }
+
+        .product-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .product-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+
+        .card-img-wrapper {
+            position: relative;
+            overflow: hidden;
+            height: 250px;
+        }
+
+        .card-img-wrapper img {
+            transition: transform 0.5s ease;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .product-card:hover .card-img-wrapper img {
+            transform: scale(1.1);
+        }
+
+        .card-img-overlay {
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .product-card:hover .card-img-overlay {
+            opacity: 1;
+        }
+
+        @@media (max-width: 768px) {
+            .product-title {
+                font-size: 2rem;
+            }
+
+            .product-image-container {
+                margin-bottom: 30px;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function increaseQuantity() {
+            const input = document.getElementById('quantity');
+            const max = parseInt(input.getAttribute('max'));
+            const currentValue = parseInt(input.value);
+            if (currentValue < max) {
+                input.value = currentValue + 1;
+            }
+        }
+
+        function decreaseQuantity() {
+            const input = document.getElementById('quantity');
+            const currentValue = parseInt(input.value);
+            if (currentValue > 1) {
+                input.value = currentValue - 1;
+            }
+        }
+
+        // Add animation on scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.product-card, .product-details, .product-image-container').forEach((el) => {
+            observer.observe(el);
+        });
+    </script>
+} 

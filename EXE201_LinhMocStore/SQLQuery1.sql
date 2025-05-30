@@ -21,6 +21,14 @@ CREATE TABLE Payment ( PaymentID INT PRIMARY KEY IDENTITY(1,1), OrderID INT FORE
 CREATE TABLE Notification ( NotificationID INT PRIMARY KEY IDENTITY(1,1), UserID INT FOREIGN KEY REFERENCES UserID, Content NVARCHAR(500), Status NVARCHAR(20), CreatedAt DATETIME );
 -- Tạo bảng Blog 
 CREATE TABLE Blog ( BlogID INT PRIMARY KEY IDENTITY(1,1), Title NVARCHAR(200) NOT NULL, Content NVARCHAR(MAX), CreatedAt DATETIME NOT NULL DEFAULT GETDATE() );
+
+ALTER TABLE Blog
+ADD Image nvarchar(255) NULL,
+    Author nvarchar(100) NULL,
+    Summary nvarchar(500) NULL,
+    IsFeatured bit NOT NULL DEFAULT 0,
+    IsActive bit NOT NULL DEFAULT 1;
+    
 -- =========================== -- Insert dữ liệu mẫu -- ===========================
 -- Category 
 INSERT INTO Category (Name) VALUES (N'Vòng tay trầm hương'), (N'Vòng tay gỗ sưa'), (N'Vòng tay gỗ huyết long');
@@ -56,4 +64,113 @@ INSERT INTO Payment (OrderID, Content, Price, TransactionCode, Status, CreatedAt
 -- Notification
 INSERT INTO Notification (UserID, Content, Status, CreatedAt) VALUES (2, N'Đơn hàng của bạn đã được xác nhận.', N'Chưa đọc', GETDATE());
 -- Blog 
-INSERT INTO Blog (Title, Content) VALUES (N'Cách chọn vòng phong thủy hợp mệnh', N'Nội dung bài viết về cách chọn vòng phong thủy...');
+INSERT INTO Blog (Title, Content) VALUES (N'Cách chọn vòng phong thủy hợp mệnh', N'Nội dung bài viết về cách chọn vòng phong thủy...');-- Thêm các bài viết blog mẫu
+INSERT INTO Blog (Title, Content, CreatedAt, Image, Author, Summary, IsFeatured, IsActive)
+VALUES 
+(
+    N'Ý nghĩa phong thủy của vòng gỗ huyết long',
+    N'Vòng gỗ huyết long là một trong những loại vòng phong thủy được ưa chuộng nhất hiện nay. Gỗ huyết long có màu đỏ tự nhiên, tượng trưng cho sự may mắn và tài lộc. Theo phong thủy, vòng gỗ huyết long mang lại nhiều năng lượng tích cực cho người đeo.
+
+Các lợi ích chính của vòng gỗ huyết long:
+1. Tăng cường sức khỏe và tuổi thọ
+2. Mang lại may mắn trong công việc và tài chính
+3. Bảo vệ người đeo khỏi năng lượng tiêu cực
+4. Tăng cường sự tự tin và quyết đoán
+
+Cách chọn vòng gỗ huyết long phù hợp:
+- Nên chọn vòng có màu đỏ tự nhiên, không bị nhuộm
+- Kích thước hạt vừa phải, không quá to hoặc quá nhỏ
+- Số lượng hạt nên là số lẻ (9, 11, 13, 15, 17, 19, 21)
+- Nên mua từ nguồn uy tín để đảm bảo chất lượng gỗ
+
+Lưu ý khi sử dụng:
+- Nên đeo vòng ở tay trái để thu hút năng lượng
+- Thường xuyên lau chùi và bảo quản vòng
+- Không nên để vòng tiếp xúc với nước hoặc hóa chất
+- Nên tháo vòng khi đi ngủ để vòng được "nghỉ ngơi"',
+    GETDATE(),
+    '/images/blogs/huyet-long.jpg',
+    N'Phong Thủy Sư',
+    N'Vòng gỗ huyết long là một trong những loại vòng phong thủy được ưa chuộng nhất hiện nay. Bài viết sẽ giúp bạn hiểu rõ về ý nghĩa và cách sử dụng vòng gỗ huyết long trong phong thủy.',
+    1,
+    1
+),
+(
+    N'Cách phân biệt vòng đá phong thủy thật và giả',
+    N'Trên thị trường hiện nay có rất nhiều loại vòng đá phong thủy với chất lượng khác nhau. Việc phân biệt đá thật và giả là rất quan trọng để đảm bảo hiệu quả phong thủy và tránh lãng phí tiền bạc.
+
+Các cách phân biệt vòng đá phong thủy thật:
+
+1. Kiểm tra bằng mắt thường:
+- Đá thật thường có vân tự nhiên, không đều
+- Màu sắc tự nhiên, không quá rực rỡ
+- Có thể có các tạp chất nhỏ bên trong
+- Bề mặt có độ bóng tự nhiên
+
+2. Kiểm tra bằng nhiệt:
+- Đá thật mát lạnh khi chạm vào
+- Giữ nhiệt lâu hơn đá giả
+- Không bị nóng lên nhanh khi ma sát
+
+3. Kiểm tra bằng âm thanh:
+- Đá thật phát ra âm thanh trong trẻo khi gõ
+- Đá giả thường phát ra âm thanh đục
+
+4. Kiểm tra bằng nước:
+- Đá thật không bị phai màu khi ngâm nước
+- Không bị mất độ bóng sau khi ngâm
+
+Các loại đá phong thủy phổ biến:
+1. Thạch anh tím: Tăng cường trí tuệ và sự tập trung
+2. Thạch anh hồng: Mang lại tình duyên và hạnh phúc
+3. Thạch anh vàng: Thu hút tài lộc và may mắn
+4. Mã não: Bảo vệ sức khỏe và xua đuổi tà khí
+5. Ngọc bích: Mang lại bình an và thịnh vượng',
+    GETDATE(),
+    '/images/blogs/da-phong-thuy.jpg',
+    N'Chuyên Gia Đá Quý',
+    N'Bài viết hướng dẫn chi tiết cách phân biệt vòng đá phong thủy thật và giả, giúp bạn tránh mua phải hàng kém chất lượng và đảm bảo hiệu quả phong thủy.',
+    1,
+    1
+),
+(
+    N'Hướng dẫn chọn vòng phong thủy theo mệnh',
+    N'Theo phong thủy, việc chọn vòng phong thủy phù hợp với mệnh của người đeo là rất quan trọng. Mỗi mệnh sẽ phù hợp với những màu sắc và chất liệu khác nhau.
+
+1. Người mệnh Kim:
+- Màu sắc phù hợp: Trắng, vàng, nâu
+- Chất liệu: Bạc, vàng, thạch anh trắng
+- Tránh màu đỏ, hồng (màu của Hỏa khắc Kim)
+
+2. Người mệnh Mộc:
+- Màu sắc phù hợp: Xanh lá, đen
+- Chất liệu: Gỗ, ngọc bích, thạch anh đen
+- Tránh màu trắng (màu của Kim khắc Mộc)
+
+3. Người mệnh Thủy:
+- Màu sắc phù hợp: Đen, xanh dương
+- Chất liệu: Thạch anh đen, ngọc lam
+- Tránh màu vàng, nâu (màu của Thổ khắc Thủy)
+
+4. Người mệnh Hỏa:
+- Màu sắc phù hợp: Đỏ, hồng, tím
+- Chất liệu: Thạch anh tím, mã não đỏ
+- Tránh màu đen (màu của Thủy khắc Hỏa)
+
+5. Người mệnh Thổ:
+- Màu sắc phù hợp: Vàng, nâu, đỏ
+- Chất liệu: Thạch anh vàng, mã não nâu
+- Tránh màu xanh lá (màu của Mộc khắc Thổ)
+
+Lưu ý khi chọn vòng:
+- Nên chọn vòng có số hạt phù hợp với tuổi
+- Kích thước hạt vừa phải với cổ tay
+- Chất liệu tự nhiên, không bị nhuộm màu
+- Nguồn gốc rõ ràng, đảm bảo chất lượng',
+    GETDATE(),
+    '/images/blogs/vong-theo-menh.jpg',
+    N'Phong Thủy Sư',
+    N'Bài viết hướng dẫn chi tiết cách chọn vòng phong thủy phù hợp với từng mệnh, giúp bạn tăng cường vận khí và may mắn trong cuộc sống.',
+    1,
+    1
+);

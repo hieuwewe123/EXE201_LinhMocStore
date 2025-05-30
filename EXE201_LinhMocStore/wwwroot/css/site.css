@@ -19,4 +19,18 @@ html {
 
 body {
   margin-bottom: 60px;
+  padding-top: 100px;
+}
+
+#commonHeader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+}
+
+.main-content {
+  margin-top: 76px; /* Chiều cao của header */
+  flex: 1;
 }

@@ -1,0 +1,158 @@
+@* Footer Partial View *@
+<footer class="footer bg-dark text-light pt-5 pb-4">
+    <div class="container">
+        <div class="row g-4">
+            <!-- Thông tin cửa hàng -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-uppercase mb-4 fw-bold">Linh Mộc Store</h5>
+                <p class="mb-4">Chuyên cung cấp các sản phẩm phong thủy cao cấp, mang lại may mắn và tài lộc cho khách hàng.</p>
+                <div class="d-flex gap-3 mb-4">
+                    <a href="#" class="text-light fs-4"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="text-light fs-4"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="text-light fs-4"><i class="fab fa-youtube"></i></a>
+                    <a href="#" class="text-light fs-4"><i class="fab fa-tiktok"></i></a>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-phone-alt me-3"></i>
+                    <span>Hotline: 1900 1234</span>
+                </div>
+                <div class="d-flex align-items-center mb-2">
+                    <i class="fas fa-envelope me-3"></i>
+                    <span>Email: info@linhmocstore.com</span>
+                </div>
+                <div class="d-flex align-items-center">
+                    <i class="fas fa-map-marker-alt me-3"></i>
+                    <span>123 Đường ABC, Quận XYZ, TP. Hồ Chí Minh</span>
+                </div>
+            </div>
+
+            <!-- Liên kết nhanh -->
+            <div class="col-lg-2 col-md-6">
+                <h5 class="text-uppercase mb-4 fw-bold">Liên kết</h5>
+                <ul class="list-unstyled footer-links">
+                    <li class="mb-2"><a href="/" class="text-light text-decoration-none">Trang chủ</a></li>
+                    <li class="mb-2"><a href="/about" class="text-light text-decoration-none">Giới thiệu</a></li>
+                    <li class="mb-2"><a href="/products" class="text-light text-decoration-none">Sản phẩm</a></li>
+                    <li class="mb-2"><a href="/blogs" class="text-light text-decoration-none">Bài viết</a></li>
+                    <li class="mb-2"><a href="/contact" class="text-light text-decoration-none">Liên hệ</a></li>
+                </ul>
+            </div>
+
+            <!-- Chính sách -->
+            <div class="col-lg-2 col-md-6">
+                <h5 class="text-uppercase mb-4 fw-bold">Chính sách</h5>
+                <ul class="list-unstyled footer-links">
+                    <li class="mb-2"><a href="/privacy" class="text-light text-decoration-none">Chính sách bảo mật</a></li>
+                    <li class="mb-2"><a href="/terms" class="text-light text-decoration-none">Điều khoản sử dụng</a></li>
+                    <li class="mb-2"><a href="/shipping" class="text-light text-decoration-none">Chính sách vận chuyển</a></li>
+                    <li class="mb-2"><a href="/return" class="text-light text-decoration-none">Chính sách đổi trả</a></li>
+                    <li class="mb-2"><a href="/warranty" class="text-light text-decoration-none">Chính sách bảo hành</a></li>
+                </ul>
+            </div>
+
+            <!-- Đăng ký nhận tin -->
+            <div class="col-lg-4 col-md-6">
+                <h5 class="text-uppercase mb-4 fw-bold">Đăng ký nhận tin</h5>
+                <p class="mb-4">Đăng ký để nhận thông tin về sản phẩm mới và khuyến mãi đặc biệt.</p>
+                <form class="mb-4">
+                    <div class="input-group">
+                        <input type="email" class="form-control" placeholder="Email của bạn" required>
+                        <button class="btn btn-primary" type="submit">Đăng ký</button>
+                    </div>
+                </form>
+                <div class="payment-methods">
+                    <h6 class="mb-3">Phương thức thanh toán</h6>
+                    <div class="d-flex gap-2">
+                        <i class="fab fa-cc-visa fs-4"></i>
+                        <i class="fab fa-cc-mastercard fs-4"></i>
+                        <i class="fab fa-cc-paypal fs-4"></i>
+                        <i class="fab fa-cc-momo fs-4"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <hr class="border-light">
+                <div class="text-center py-3">
+                    <p class="mb-0">&copy; @DateTime.Now.Year - Linh Mộc Store. Tất cả quyền được bảo lưu.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<style>
+    .footer {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+    }
+
+    .footer-links a {
+        transition: all 0.3s ease;
+        position: relative;
+        padding-left: 0;
+    }
+
+    .footer-links a:hover {
+        padding-left: 10px;
+        color: #3498db !important;
+    }
+
+    .footer-links a::before {
+        content: '→';
+        position: absolute;
+        left: -20px;
+        opacity: 0;
+        transition: all 0.3s ease;
+    }
+
+    .footer-links a:hover::before {
+        left: 0;
+        opacity: 1;
+    }
+
+    .input-group .form-control {
+        border: none;
+        padding: 12px;
+        border-radius: 4px 0 0 4px;
+    }
+
+    .input-group .btn {
+        padding: 12px 24px;
+        border-radius: 0 4px 4px 0;
+        background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
+        border: none;
+    }
+
+    .input-group .btn:hover {
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    }
+
+    .payment-methods i {
+        color: #fff;
+        opacity: 0.8;
+        transition: all 0.3s ease;
+    }
+
+    .payment-methods i:hover {
+        opacity: 1;
+        transform: translateY(-2px);
+    }
+
+    @@media screen and (max-width: 768px) {
+        .footer {
+            text-align: center;
+        }
+        .footer .d-flex {
+            justify-content: center;
+        }
+        .footer-links a::before {
+            display: none;
+        }
+        .footer-links a:hover {
+            padding-left: 0;
+        }
+    }
+</style> 

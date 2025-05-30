@@ -4,7 +4,11 @@ using EXE201_LinhMocStore.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    // Thêm route cho phép cả chữ hoa và chữ thường
+    options.Conventions.AddPageRoute("/Products/Details", "/products/details/{id:int}");
+});
 
 // Thêm DbContext
 builder.Services.AddDbContext<PhongThuyShopContext>(options =>
@@ -29,4 +33,4 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.Run();
+app.Run(); 

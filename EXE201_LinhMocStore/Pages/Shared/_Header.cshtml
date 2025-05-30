@@ -1,0 +1,47 @@
+﻿<!-- Header -->
+<header class="bg-gradient-to-r from-gray-900 to-gray-800 text-white pb-6" id="commonHeader">
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand fw-bold fs-3" href="/">
+                <i class="fas fa-gem me-2"></i>Linh Mộc Store
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active hover-effect fs-4" href="/">Trang chủ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link hover-effect fs-4" href="/about">Giới thiệu</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link hover-effect fs-4" href="/products">Sản phẩm</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link hover-effect fs-4" href="/blogs">Bài viết</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+<script>
+    (function() {
+        var header = document.getElementById("commonHeader");
+        var lastScrollTop = 0;
+        var scrollThreshold = 50; // Khoảng scroll (px) để bắt đầu ẩn header
+        var scrollDelta = 0;
+        window.addEventListener("scroll", function() {
+            var st = window.pageYOffset || document.documentElement.scrollTop;
+            scrollDelta = st - lastScrollTop;
+            if (st > scrollThreshold && scrollDelta > 0) {
+                header.style.opacity = "0";
+            } else {
+                header.style.opacity = "1";
+            }
+            lastScrollTop = st;
+        });
+    })();
+</script>
