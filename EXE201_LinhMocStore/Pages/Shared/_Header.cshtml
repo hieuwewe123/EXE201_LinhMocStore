@@ -1,4 +1,12 @@
-﻿<!-- Header -->
+﻿@using Microsoft.AspNetCore.Http
+@inject IHttpContextAccessor HttpContextAccessor
+
+@{
+    var username = HttpContextAccessor.HttpContext?.Session.GetString("Username");
+    var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole");
+}
+
+<!-- Header -->
 <header class="bg-gradient-to-r from-gray-900 to-gray-800 text-white pb-6" id="commonHeader">
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
@@ -22,6 +30,28 @@
                     <li class="nav-item">
                         <a class="nav-link hover-effect fs-4" href="/blogs">Bài viết</a>
                     </li>
+                    @if (!string.IsNullOrEmpty(username))
+                    {
+                        <li class="nav-item d-flex align-items-center">
+                            <span class="nav-link fs-4">@username</span>
+                        </li>
+                        @* Nếu là admin thì hiện nút quản trị *@
+                        @if (userRole == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="btn btn-warning ms-3" href="/admin">Quản trị</a>
+                            </li>
+                        }
+                        <li class="nav-item">
+                            <a class="btn btn-danger ms-3" href="/logout">Đăng xuất</a>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="btn btn-primary ms-3" href="/login">Đăng nhập</a>
+                        </li>
+                    }
                 </ul>
             </div>
         </div>
