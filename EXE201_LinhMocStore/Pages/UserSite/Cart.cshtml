@@ -1,0 +1,96 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.UserSite.CartModel
+@{
+}
+
+<h2>Giỏ hàng của bạn</h2>
+
+<form method="post">
+    @Html.AntiForgeryToken()
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Chọn</th>
+                <th>Tên sản phẩm</th>
+                <th>Giá</th>
+                <th>Số lượng</th>
+                <th>Tổng</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CartProducts)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox"
+                               id="checkbox-@item.CartItemId"
+                               name="SelectedIds"
+                               value="@item.CartItemId"
+                               onchange="updateTotal()" />
+                    </td>
+                    <td>@item.Product?.Name</td>
+                    <td>@item.Product.Price.ToString("N0") đ</td>
+
+                    <td>
+                        <input type="number"
+                               name="Quantities[@item.CartItemId]"
+                               value="@item.Quantity"
+                               min="1"
+                               class="form-control quantity-input"
+                               onchange="updateTotal()" />
+                    </td>
+                    <td id="total-@item.CartItemId">
+                        @((item.Quantity * item.Product.Price).ToString("N0")) đ
+                    </td>
+                    <td>
+                        <button type="submit"
+                                formaction="?handler=DeleteSingle&id=@item.CartItemId"
+                                formmethod="post"
+                                class="btn btn-danger btn-sm">
+                            Xóa
+                        </button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="4" style="text-align: right; font-weight: bold;">Tổng tiền:</td>
+                <td id="grandTotal">0 đ</td>
+                <td></td>
+            </tr>
+        </tfoot>
+    </table>
+
+    <button type="submit" class="btn btn-primary">Thanh toán</button>
+</form>
+
+@section Scripts {
+    <script>
+        function updateTotal() {
+            let grandTotal = 0;
+            const checkboxes = document.querySelectorAll('input[name="SelectedIds"]:checked');
+            checkboxes.forEach(checkbox => {
+                const id = checkbox.value;
+                const qtyInput = document.querySelector(`input[name="Quantities[${id}]"]`);
+                const qty = parseInt(qtyInput?.value) || 0;
+                const priceText = qtyInput.closest('tr').querySelector('td:nth-child(3)').innerText;
+                // Xử lý giá: bỏ " đ" và dấu phẩy
+                const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
+                const total = qty * price;
+                // Cập nhật tổng tiền từng dòng
+                const totalTd = document.getElementById(`total-${id}`);
+                if (totalTd) {
+                    totalTd.innerText = total.toLocaleString('vi-VN') + ' đ';
+                }
+                grandTotal += total;
+            });
+
+            document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('vi-VN') + ' đ';
+        }
+
+        // Khởi tạo tổng tiền khi tải trang
+        window.onload = updateTotal;
+    </script>
+}
