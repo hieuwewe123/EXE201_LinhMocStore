@@ -28,6 +28,15 @@ namespace EXE201_LinhMocStore.Pages.Admin.Order
             Users = await _context.Users.ToListAsync();
             return Page();
         }
+        public IActionResult OnGet()
+        {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+            return Page();
+        }
 
         public async Task<IActionResult> OnPostAsync()
         {
