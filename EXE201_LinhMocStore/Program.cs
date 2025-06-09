@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using EXE201_LinhMocStore.Models;
+using EXE201_LinhMocStore.Services;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,8 +9,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddRazorPages();
 
 // Add session and IHttpContextAccessor
-builder.Services.AddSession();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // thời gian timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 builder.Services.AddHttpContextAccessor();
+builder.Services.Configure<BankSettings>(builder.Configuration.GetSection("Bank"));
+builder.Services.AddSingleton(resolver => resolver.GetRequiredService<IOptions<BankSettings>>().Value);
+builder.Services.AddSingleton<BankSettings>(sp =>
+    new BankSettings(builder.Configuration));
 
 // Thêm DbContext
 builder.Services.AddDbContext<PhongThuyShopContext>(options =>

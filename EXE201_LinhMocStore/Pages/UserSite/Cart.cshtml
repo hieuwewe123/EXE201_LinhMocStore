@@ -1,11 +1,15 @@
 ﻿@page
 @model EXE201_LinhMocStore.Pages.UserSite.CartModel
 @{
+    ViewData["Title"] = "Giỏ hàng";
 }
 
 <h2>Giỏ hàng của bạn</h2>
-
-<form method="post">
+@if (@Model.Message != null)
+{
+    <p class="text-danger">@Model.Message</p>
+}
+<form method="post" >
     @Html.AntiForgeryToken()
     <table class="table">
         <thead>
@@ -31,7 +35,6 @@
                     </td>
                     <td>@item.Product?.Name</td>
                     <td>@item.Product.Price.ToString("N0") đ</td>
-
                     <td>
                         <input type="number"
                                name="Quantities[@item.CartItemId]"
@@ -41,7 +44,7 @@
                                onchange="updateTotal()" />
                     </td>
                     <td id="total-@item.CartItemId">
-                        @((item.Quantity * item.Product.Price).ToString("N0")) đ
+                        @((item.Quantity * (item.Product?.Price ?? 0)).ToString("N0")) đ
                     </td>
                     <td>
                         <button type="submit"
@@ -63,7 +66,7 @@
         </tfoot>
     </table>
 
-    <button type="submit" class="btn btn-primary">Thanh toán</button>
+    <button type="submit" class="btn btn-primary">Xác nhận đơn hàng</button>
 </form>
 
 @section Scripts {
@@ -76,10 +79,8 @@
                 const qtyInput = document.querySelector(`input[name="Quantities[${id}]"]`);
                 const qty = parseInt(qtyInput?.value) || 0;
                 const priceText = qtyInput.closest('tr').querySelector('td:nth-child(3)').innerText;
-                // Xử lý giá: bỏ " đ" và dấu phẩy
                 const price = parseInt(priceText.replace(/[^\d]/g, '')) || 0;
                 const total = qty * price;
-                // Cập nhật tổng tiền từng dòng
                 const totalTd = document.getElementById(`total-${id}`);
                 if (totalTd) {
                     totalTd.innerText = total.toLocaleString('vi-VN') + ' đ';
@@ -90,7 +91,6 @@
             document.getElementById('grandTotal').innerText = grandTotal.toLocaleString('vi-VN') + ' đ';
         }
 
-        // Khởi tạo tổng tiền khi tải trang
         window.onload = updateTotal;
     </script>
 }

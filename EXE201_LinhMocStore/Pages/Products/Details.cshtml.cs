@@ -2,8 +2,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using EXE201_LinhMocStore.Models;
+using Microsoft.AspNetCore.Http; // Thêm dòng này để dùng Session
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace EXE201_LinhMocStore.Pages.Products
 {
@@ -30,7 +32,6 @@ namespace EXE201_LinhMocStore.Pages.Products
                 return NotFound();
             }
 
-            // Lấy sản phẩm liên quan (cùng danh mục)
             RelatedProducts = await _context.Products
                 .Where(p => p.CategoryId == Product.CategoryId && p.ProductId != Product.ProductId)
                 .OrderByDescending(p => p.ProductId)
@@ -42,9 +43,13 @@ namespace EXE201_LinhMocStore.Pages.Products
 
         public async Task<IActionResult> OnPostAsync(int productId, int quantity)
         {
-            if (!User.Identity.IsAuthenticated)
+            // 👉 Kiểm tra đăng nhập bằng Session
+            var username = HttpContext.Session.GetString("Username");
+            var userId = HttpContext.Session.GetInt32("UserId");
+
+            if (string.IsNullOrEmpty(username) || userId == null)
             {
-                return RedirectToPage("/Account/Login", new { returnUrl = $"/products/details/{productId}" });
+                return RedirectToPage("/Login/Login", new { returnUrl = $"/products/details/{productId}" });
             }
 
             var product = await _context.Products.FindAsync(productId);
@@ -59,25 +64,21 @@ namespace EXE201_LinhMocStore.Pages.Products
                 return RedirectToPage(new { id = productId });
             }
 
-            // Lấy giỏ hàng của user hiện tại
-            var userId = int.Parse(User.FindFirst("UserId")?.Value ?? "0");
+            // Lấy giỏ hàng của người dùng hiện tại
             var cart = await _context.Carts
                 .Include(c => c.CartItems)
                 .FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (cart == null)
             {
-                // Tạo giỏ hàng mới nếu chưa có
-                cart = new Cart { UserId = userId };
+                cart = new Cart { UserId = userId.Value };
                 _context.Carts.Add(cart);
                 await _context.SaveChangesAsync();
             }
 
-            // Kiểm tra xem sản phẩm đã có trong giỏ hàng chưa
             var cartItem = cart.CartItems.FirstOrDefault(ci => ci.ProductId == productId);
             if (cartItem != null)
             {
-                // Cập nhật số lượng nếu đã có
                 cartItem.Quantity += quantity;
                 if (cartItem.Quantity > product.Quantity)
                 {
@@ -87,7 +88,6 @@ namespace EXE201_LinhMocStore.Pages.Products
             }
             else
             {
-                // Thêm mới vào giỏ hàng
                 cartItem = new CartItem
                 {
                     CartId = cart.CartId,
@@ -102,4 +102,4 @@ namespace EXE201_LinhMocStore.Pages.Products
             return RedirectToPage(new { id = productId });
         }
     }
-} 
+}

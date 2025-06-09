@@ -16,7 +16,7 @@ public partial class Payment
     public string? TransactionCode { get; set; }
 
     public string? Status { get; set; }
-
+    public bool isCompleted {  get; set; }
     public DateTime? CreatedAt { get; set; }
 
     public virtual Order? Order { get; set; }

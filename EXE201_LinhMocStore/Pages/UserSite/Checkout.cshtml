@@ -1,0 +1,83 @@
+﻿@page
+@model EXE201_LinhMocStore.Pages.UserSite.CheckoutModel
+@{
+    ViewData["Title"] = "Thanh toán";
+}
+
+<h2>Thông tin thanh toán</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Hình ảnh</th>
+            <th>Tên sản phẩm</th>
+            <th>Giá</th>
+            <th>Số lượng</th>
+            <th>Tổng</th>
+        </tr>
+    </thead>
+    <tbody>
+
+        @foreach (var item in Model.SelectedProducts)
+        {
+            <tr>
+                <td><img src="@item.Product.Image" /></td>
+                <td>@item.Product.Name</td>
+                <td>@item.Product.Price.ToString("N0") vnđ</td>
+                <td>@item.Quantity</td>
+                <td>@((item.Product.Price * item.Quantity).ToString("N0")) vnđ</td>
+            </tr>
+        }
+    </tbody>
+    <tfoot>
+        <tr>
+            <td colspan="4" style="text-align: right;"><strong>Tổng cộng:</strong></td>
+            <td><strong>@Model.Payment.Price?.ToString("N0") đ</strong></td>
+        </tr>
+    </tfoot>
+</table>
+
+<hr />
+
+<h4>Chuyển khoản ngân hàng</h4>
+<p>Vui lòng chuyển khoản theo thông tin bên dưới:</p>
+<ul>
+    <li><strong>Ngân hàng:</strong> @Model.bankInfo.Bank_id</li>
+    <li><strong>Chủ tài khoản:</strong> @Model.bankInfo.BankName</li>
+    <li><strong>Số tài khoản:</strong> @Model.bankInfo.AccountNo</li>
+    <li><strong>Nội dung chuyển khoản:</strong> @Model.Payment.TransactionCode</li>
+</ul>
+
+<h5>Hoặc quét mã QR để thanh toán:</h5>
+<img src="https://img.vietqr.io/image/@Model.bankInfo.Bank_id-@Model.bankInfo.AccountNo-qr_only.png?amount=@((int)Model.Payment.Price)&addInfo=@Model.Payment.TransactionCode" alt="QR Code" style="width: 250px;" />
+
+<form id="PaymentSuccess" hidden method="post">
+    <input name="paymentId" value="@Model.Payment.PaymentId" />
+    <input name="orderId" value="@Model.Order.OrderId" />
+</form>
+@section Scripts {
+    <script>
+        async function checkPaid(price, content) {
+            try {
+                const res = await fetch("https://script.google.com/macros/s/AKfycbwUnkWYvk0GVsd_-51JFtHDuauDZXUPNspvmX3vitkRaQI8qxipl0SRN24hRd0ZRFo8/exec");
+                const data = await res.json();
+                console.log(data);
+
+                const matchedPayment = data.data.find(item =>
+                    item["Giá trị"] >= price && item["Mô tả"] === content
+                );
+
+                if (matchedPayment) {
+                    document.getElementById("PaymentSuccess").submit();
+                }
+            } catch (error) {
+                console.error("Lỗi khi kiểm tra giao dịch:", error);
+            }
+        }
+
+
+        setInterval(() => {
+        checkPaid("@Model.Payment.Price", "@Model.Payment.TransactionCode");
+            }, 1000);
+    </script>
+}

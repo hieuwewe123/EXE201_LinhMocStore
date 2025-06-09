@@ -32,7 +32,7 @@ namespace EXE201_LinhMocStore.Pages.Login
             if (user != null && Input.Password == user.PasswordHash)
             {
                 HttpContext.Session.SetString("Username", user.Username ?? "");
-
+                HttpContext.Session.SetInt32("UserId", user.UserId);
                 // Phân quyền dựa trên username
                 if (user.Username == "admin")
                     HttpContext.Session.SetString("UserRole", "Admin");
