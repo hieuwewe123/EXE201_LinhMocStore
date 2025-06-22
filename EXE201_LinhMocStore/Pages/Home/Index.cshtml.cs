@@ -52,6 +52,13 @@ namespace EXE201_LinhMocStore.Pages.Home
 
         public async Task<IActionResult> OnPostAddToCartAjaxAsync()
         {
+            // Kiểm tra quyền admin
+            var userRole = HttpContext.Session.GetString("UserRole");
+            if (userRole == "Admin")
+            {
+                return new JsonResult(new { success = false, message = "Admin không thể thêm sản phẩm vào giỏ hàng." });
+            }
+
             var userId = HttpContext.Session.GetInt32("UserId");
 
             if (userId == null)
@@ -110,6 +117,27 @@ namespace EXE201_LinhMocStore.Pages.Home
             {
                 return new JsonResult(new { success = false, message = "Dữ liệu không hợp lệ." });
             }
+        }
+
+        public async Task<IActionResult> OnPostGetCartCountAsync()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId.Value);
+            if (cart == null)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cartItemCount = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+
+            return new JsonResult(new { count = cartItemCount });
         }
 
         public class AddToCartRequest

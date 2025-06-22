@@ -17,6 +17,12 @@ public partial class Order
 
     public DateTime? CreatedAt { get; set; }
 
+    // Thông tin địa chỉ giao hàng
+    public string? ReceiverName { get; set; }
+    public string? ReceiverPhone { get; set; }
+    public string? ShippingAddress { get; set; }
+    public string? DeliveryNote { get; set; }
+
     public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
 
     public virtual ICollection<Payment> Payments { get; set; } = new List<Payment>();

@@ -21,6 +21,12 @@ namespace EXE201_LinhMocStore.Pages.Admin.Payment
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             Payment = await _context.Payments.FindAsync(id);
             if (Payment == null)
                 return NotFound();
@@ -28,18 +34,15 @@ namespace EXE201_LinhMocStore.Pages.Admin.Payment
             Orders = await _context.Orders.Include(o => o.User).ToListAsync();
             return Page();
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnPostAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task<IActionResult> OnPostAsync()
-        {
             var paymentInDb = await _context.Payments.FindAsync(Payment.PaymentId);
             if (paymentInDb == null)
                 return NotFound();

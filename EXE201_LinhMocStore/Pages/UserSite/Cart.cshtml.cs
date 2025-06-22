@@ -39,7 +39,9 @@ namespace EXE201_LinhMocStore.Pages.UserSite
 
         [BindProperty]
         public int Quantity { get; set; }
-        public string Message { get; set; }
+        public string Message { get; set; } = string.Empty;
+        public bool isLoggedIn { get; set; }
+        public User? CurrentUser { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -64,6 +66,12 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 .Where(ci => ci.CartId == cart.CartId)
                 .Include(ci => ci.Product)
                 .ToListAsync();
+
+            // Lấy thông tin user hiện tại
+            CurrentUser = await _context.Users.FirstOrDefaultAsync(u => u.UserId == CurrentUserId.Value);
+
+            // Set login status
+            isLoggedIn = true; // User đã đăng nhập mới vào được trang này
 
             return Page();
         }
@@ -90,7 +98,17 @@ namespace EXE201_LinhMocStore.Pages.UserSite
             }
             cartItem.Quantity = Quantity;
             await _context.SaveChangesAsync();
-            return new JsonResult(new { success = true, quantity = cartItem.Quantity });
+            
+            // Tính tổng số lượng giỏ hàng
+            var totalCartItems = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+            
+            return new JsonResult(new { 
+                success = true, 
+                quantity = cartItem.Quantity,
+                totalCartItems = totalCartItems
+            });
         }
 
         public async Task<IActionResult> OnPostDeleteSingleAsync(int id)
@@ -118,9 +136,16 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 {
                     _context.CartItems.Remove(cartItem);
                     await _context.SaveChangesAsync();
-                    // After deleting, we don't know the selection, so we can't calculate total.
-                    // The client should call updateSelection after this.
-                    return new JsonResult(new { success = true });
+                    
+                    // Tính tổng số lượng giỏ hàng sau khi xóa
+                    var totalCartItems = await _context.CartItems
+                        .Where(ci => ci.CartId == cart.CartId)
+                        .SumAsync(ci => ci.Quantity);
+                    
+                    return new JsonResult(new { 
+                        success = true,
+                        totalCartItems = totalCartItems
+                    });
                 }
             }
             return new JsonResult(new { success = false, message = "Không tìm thấy sản phẩm hoặc không có quyền xóa." });
@@ -384,9 +409,6 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 request.Quantity = 1;
             }
 
-            // Kiểm tra số lượng sản phẩm trong kho
-            Console.WriteLine($"Update quantity: Product={cartItem.Product.Name}, Stock={cartItem.Product.Quantity}, Requested={request.Quantity}");
-            
             if (cartItem.Product.Quantity < request.Quantity)
             {
                 return new JsonResult(new
@@ -398,7 +420,6 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 });
             }
 
-            // Cập nhật số lượng trong giỏ hàng
             cartItem.Quantity = request.Quantity;
             await _context.SaveChangesAsync();
 
@@ -428,7 +449,10 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 newQuantity = cartItem.Quantity,
                 itemTotal = (decimal)cartItem.Quantity * cartItem.Product.Price,
                 grandTotal = grandTotal,
-                stock = cartItem.Product.Quantity
+                stock = cartItem.Product.Quantity,
+                totalCartItems = await _context.CartItems
+                    .Where(ci => ci.CartId == cart.CartId)
+                    .SumAsync(ci => ci.Quantity)
             });
         }
 
@@ -486,6 +510,15 @@ namespace EXE201_LinhMocStore.Pages.UserSite
         public class CheckoutRequest
         {
             public List<CartTotalItem> Items { get; set; } = new();
+            public AddressInfo AddressInfo { get; set; } = new();
+        }
+
+        public class AddressInfo
+        {
+            public string ReceiverName { get; set; } = string.Empty;
+            public string ReceiverPhone { get; set; } = string.Empty;
+            public string ShippingAddress { get; set; } = string.Empty;
+            public string DeliveryNote { get; set; } = string.Empty;
         }
 
         public async Task<IActionResult> OnPostCheckoutAjaxAsync()
@@ -534,6 +567,33 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 return new JsonResult(new { success = false, message = "Vui lòng chọn sản phẩm để thanh toán." });
             }
 
+            // Validation thông tin địa chỉ
+            if (request.AddressInfo != null)
+            {
+                if (string.IsNullOrWhiteSpace(request.AddressInfo.ReceiverName))
+                {
+                    return new JsonResult(new { success = false, message = "Vui lòng nhập tên người nhận." });
+                }
+                
+                if (string.IsNullOrWhiteSpace(request.AddressInfo.ReceiverPhone))
+                {
+                    return new JsonResult(new { success = false, message = "Vui lòng nhập số điện thoại người nhận." });
+                }
+                
+                if (string.IsNullOrWhiteSpace(request.AddressInfo.ShippingAddress))
+                {
+                    return new JsonResult(new { success = false, message = "Vui lòng nhập địa chỉ giao hàng." });
+                }
+            }
+            else
+            {
+                // Kiểm tra thông tin địa chỉ hiện tại của user
+                if (string.IsNullOrWhiteSpace(CurrentUser?.Address))
+                {
+                    return new JsonResult(new { success = false, message = "Vui lòng cập nhật địa chỉ giao hàng trong hồ sơ hoặc nhập địa chỉ mới." });
+                }
+            }
+
             var cart = await _context.Carts
                 .FirstOrDefaultAsync(c => c.UserId == CurrentUserId.Value);
 
@@ -562,18 +622,31 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 .GroupBy(i => i.Id)
                 .ToDictionary(g => g.Key, g => g.Sum(x => x.Quantity));
 
-            // Kiểm tra số lượng sản phẩm trong kho trước khi tạo đơn hàng
+            Console.WriteLine("Request items breakdown:");
+            foreach (var item in request.Items)
+            {
+                Console.WriteLine($"  Item ID: {item.Id}, Quantity: {item.Quantity}");
+            }
+            
+            Console.WriteLine("Grouped request items:");
+            foreach (var kvp in requestItemsDict)
+            {
+                Console.WriteLine($"  CartItem ID: {kvp.Key}, Total Quantity: {kvp.Value}");
+            }
+
             foreach (var item in selectedProducts)
             {
                 var requestedQuantity = requestItemsDict[item.CartItemId];
-                Console.WriteLine($"Product: {item.Product.Name}, Stock: {item.Product.Quantity}, Requested: {requestedQuantity}");
+                var availableQuantity = item.Product.Quantity;
                 
-                if (item.Product.Quantity < requestedQuantity)
+                Console.WriteLine($"Product: {item.Product.Name}, Requested: {requestedQuantity}, Available: {availableQuantity}");
+                
+                if (availableQuantity < requestedQuantity)
                 {
                     return new JsonResult(new
                     {
                         success = false,
-                        message = $"Sản phẩm \"{item.Product.Name}\" không đủ hàng trong kho (chỉ còn {item.Product.Quantity}, yêu cầu {requestedQuantity}). Vui lòng cập nhật lại giỏ hàng."
+                        message = $"Sản phẩm \"{item.Product.Name}\" không đủ hàng trong kho (chỉ còn {availableQuantity}). Vui lòng cập nhật lại giỏ hàng."
                     });
                 }
             }
@@ -612,7 +685,12 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                     UserId = CurrentUserId,
                     OrderDate = DateTime.Now,
                     Status = OrderStatus.PendingPayment,
-                    CreatedAt = DateTime.Now
+                    CreatedAt = DateTime.Now,
+                    // Thêm thông tin địa chỉ giao hàng
+                    ReceiverName = request.AddressInfo?.ReceiverName ?? CurrentUser?.NormalName ?? "",
+                    ReceiverPhone = request.AddressInfo?.ReceiverPhone ?? CurrentUser?.PhoneNumber ?? "",
+                    ShippingAddress = request.AddressInfo?.ShippingAddress ?? CurrentUser?.Address ?? "",
+                    DeliveryNote = request.AddressInfo?.DeliveryNote ?? ""
                 };
                 _context.Orders.Add(newOrder);
                 
@@ -629,17 +707,12 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 };
                 _context.Payments.Add(payment);
 
-                List<OrderDetail> orderDetails = selectedProducts.Select(item => {
-                    var quantity = requestItemsDict[item.CartItemId];
-                    Console.WriteLine($"Creating OrderDetail: Product={item.Product.Name}, CartItemId={item.CartItemId}, Quantity={quantity}, CartItemQuantity={item.Quantity}");
-                    
-                    return new OrderDetail
-                    {
-                        OrderId = newOrder.OrderId,
-                        ProductId = item.Product.ProductId,
-                        Quantity = quantity,
-                        Price = item.Product.Price
-                    };
+                List<OrderDetail> orderDetails = selectedProducts.Select(item => new OrderDetail
+                {
+                    OrderId = newOrder.OrderId,
+                    ProductId = item.Product.ProductId,
+                    Quantity = requestItemsDict[item.CartItemId],
+                    Price = item.Product.Price
                 }).ToList();
                 _context.OrderDetails.AddRange(orderDetails);
                 
@@ -700,6 +773,26 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                     message = "Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại."
                 });
             }
+        }
+
+        public async Task<IActionResult> OnPostGetCartCountAsync()
+        {
+            if (!IsUserLoggedIn)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == CurrentUserId.Value);
+            if (cart == null)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cartItemCount = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+
+            return new JsonResult(new { count = cartItemCount });
         }
     }
 }

@@ -19,23 +19,26 @@ namespace EXE201_LinhMocStore.Pages.Admin.Product
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             Product = await _context.Products.FindAsync(id);
             if (Product == null)
                 return NotFound();
             return Page();
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnPostAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task<IActionResult> OnPostAsync()
-        {
             var productInDb = await _context.Products
                 .Include(p => p.CartItems)
                 .Include(p => p.OrderDetails)
@@ -58,6 +61,5 @@ namespace EXE201_LinhMocStore.Pages.Admin.Product
             await _context.SaveChangesAsync();
             return RedirectToPage("/Admin/Product/Index");
         }
-
     }
 }

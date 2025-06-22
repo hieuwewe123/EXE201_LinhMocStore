@@ -121,12 +121,7 @@ const cart = {
     },
 
     updateCartBadge: () => {
-        const badge = document.querySelector('.badge');
-        if (badge) {
-            const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
-            badge.textContent = totalItems;
-            badge.style.display = totalItems > 0 ? 'block' : 'none';
-        }
+        updateCartBadgeFromServer();
     },
 
     clear: () => {
@@ -428,3 +423,84 @@ function syncCartToServer() {
 }
 
 // Gọi hàm này sau khi đăng nhập thành công (có thể gọi ở trang trung gian hoặc sau khi load trang chủ)
+
+// Function to update cart badge from any page
+function updateCartBadgeFromServer() {
+    const badge = document.getElementById('cartBadge');
+    if (!badge) return;
+    
+    // Lấy số lượng từ server nếu đã đăng nhập
+    if (typeof isLoggedIn !== 'undefined' && isLoggedIn === 'true') {
+        // Tìm trang hiện tại để gọi đúng handler
+        const currentPath = window.location.pathname;
+        let handlerUrl = '?handler=GetCartCount';
+        
+        fetch(handlerUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            const newCount = data.count || 0;
+            const currentCount = parseInt(badge.textContent) || 0;
+            
+            // Chỉ cập nhật nếu số lượng thay đổi
+            if (newCount !== currentCount) {
+                badge.textContent = newCount;
+                badge.style.display = (newCount > 0) ? 'block' : 'none';
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching cart count:', error);
+            // Fallback to localStorage
+            const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+            const currentCount = parseInt(badge.textContent) || 0;
+            
+            if (totalItems !== currentCount) {
+                badge.textContent = totalItems;
+                badge.style.display = totalItems > 0 ? 'block' : 'none';
+            }
+        });
+    } else {
+        // Sử dụng localStorage cho user chưa đăng nhập
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        const currentCount = parseInt(badge.textContent) || 0;
+        
+        if (totalItems !== currentCount) {
+            badge.textContent = totalItems;
+            badge.style.display = totalItems > 0 ? 'block' : 'none';
+        }
+    }
+}
+
+// Global function to update cart badge - can be called from any page
+window.updateCartBadge = updateCartBadgeFromServer;
+
+// Function to initialize cart badge on page load
+function initializeCartBadge() {
+    const badge = document.getElementById('cartBadge');
+    if (!badge) return;
+    
+    // Nếu đã đăng nhập, lấy số lượng từ server
+    if (typeof isLoggedIn !== 'undefined' && isLoggedIn === 'true') {
+        updateCartBadgeFromServer();
+    } else {
+        // Nếu chưa đăng nhập, sử dụng localStorage
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        badge.textContent = totalItems;
+        badge.style.display = totalItems > 0 ? 'block' : 'none';
+    }
+}
+
+// Initialize cart badge when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    initializeCartBadge();
+});

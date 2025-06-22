@@ -10,9 +10,7 @@ namespace EXE201_LinhMocStore.Pages.Admin.Order
         private readonly PhongThuyShopContext _context;
 
         [BindProperty]
-        public Models.Order Order { get; set; } = new();
-
-        public List<Models.User> Users { get; set; } = new();
+        public Models.Order Order { get; set; } = default!;
 
         public EditModel(PhongThuyShopContext context)
         {
@@ -21,35 +19,43 @@ namespace EXE201_LinhMocStore.Pages.Admin.Order
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            Order = await _context.Orders.FindAsync(id);
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
+            Order = await _context.Orders
+                .Include(o => o.User)
+                .FirstOrDefaultAsync(o => o.OrderId == id);
             if (Order == null)
                 return NotFound();
 
-            Users = await _context.Users.ToListAsync();
             return Page();
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnPostAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task<IActionResult> OnPostAsync()
-        {
             var orderInDb = await _context.Orders.FindAsync(Order.OrderId);
             if (orderInDb == null)
                 return NotFound();
 
-            orderInDb.UserId = Order.UserId;
-            orderInDb.OrderDate = Order.OrderDate;
+            // Chỉ cho phép cập nhật status và thông tin địa chỉ giao hàng
             orderInDb.Status = Order.Status;
-            orderInDb.TotalAmount = Order.TotalAmount;
+            orderInDb.ReceiverName = Order.ReceiverName;
+            orderInDb.ReceiverPhone = Order.ReceiverPhone;
+            orderInDb.ShippingAddress = Order.ShippingAddress;
+            orderInDb.DeliveryNote = Order.DeliveryNote;
 
             await _context.SaveChangesAsync();
+            
+            TempData["SuccessMessage"] = "Đã cập nhật đơn hàng thành công!";
             return RedirectToPage("/Admin/Order/Index");
         }
     }

@@ -15,18 +15,15 @@ namespace EXE201_LinhMocStore.Pages.Admin.Blog
         {
             _context = context;
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnGetAsync(int id)
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task<IActionResult> OnGetAsync(int id)
-        {
             Blog = await _context.Blogs.FindAsync(id);
             if (Blog == null)
                 return NotFound();
@@ -35,6 +32,12 @@ namespace EXE201_LinhMocStore.Pages.Admin.Blog
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             var blogInDb = await _context.Blogs.FindAsync(Blog.BlogId);
             if (blogInDb == null)
                 return NotFound();

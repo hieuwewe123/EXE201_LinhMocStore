@@ -10,7 +10,7 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
         private readonly PhongThuyShopContext _context;
 
         [BindProperty]
-        public Models.User User { get; set; } = new();
+        public Models.User UserModel { get; set; } = new();
 
         public DeleteModel(PhongThuyShopContext context)
         {
@@ -19,23 +19,26 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            User = await _context.Users.FindAsync(id);
-            if (User == null)
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
+            UserModel = await _context.Users.FindAsync(id);
+            if (UserModel == null)
                 return NotFound();
             return Page();
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnPostAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task<IActionResult> OnPostAsync()
-        {
             var userInDb = await _context.Users
                 .Include(u => u.Carts)
                     .ThenInclude(c => c.CartItems)
@@ -44,7 +47,7 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
                     .ThenInclude(o => o.OrderDetails)
                 .Include(u => u.Orders)
                     .ThenInclude(o => o.Payments)
-                .FirstOrDefaultAsync(u => u.UserId == User.UserId);
+                .FirstOrDefaultAsync(u => u.UserId == UserModel.UserId);
 
             if (userInDb == null)
                 return NotFound();
@@ -83,4 +86,4 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
             return RedirectToPage("/Admin/User/Index");
         }
     }
-    }
+}

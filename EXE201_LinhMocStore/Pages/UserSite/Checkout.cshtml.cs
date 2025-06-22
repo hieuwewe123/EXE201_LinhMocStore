@@ -95,7 +95,31 @@ namespace EXE201_LinhMocStore.Pages.UserSite
             order.Status = OrderStatus.AwaitingConfirmation;
 
             _context.SaveChanges();
+            
+            // Cập nhật số lượng giỏ hàng sau khi thanh toán thành công
+            // Sẽ được cập nhật tự động khi chuyển hướng về trang chủ
+            
             return RedirectToPage("/Home/Index");
+        }
+
+        public async Task<IActionResult> OnPostGetCartCountAsync()
+        {
+            if (!IsUserLoggedIn)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == CurrentUserId.Value);
+            if (cart == null)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cartItemCount = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+
+            return new JsonResult(new { count = cartItemCount });
         }
     }
 }

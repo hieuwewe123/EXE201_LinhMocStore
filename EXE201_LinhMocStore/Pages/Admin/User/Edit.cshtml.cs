@@ -9,7 +9,7 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
         private readonly PhongThuyShopContext _context;
 
         [BindProperty]
-        public Models.User User { get; set; } = new();
+        public Models.User UserModel { get; set; } = new();
 
         public EditModel(PhongThuyShopContext context)
         {
@@ -18,8 +18,8 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
-            User = await _context.Users.FindAsync(id);
-            if (User == null)
+            UserModel = await _context.Users.FindAsync(id);
+            if (UserModel == null)
                 return NotFound();
             return Page();
         }
@@ -35,19 +35,19 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
 
         public async Task<IActionResult> OnPostAsync()
         {
-            var userInDb = await _context.Users.FindAsync(User.UserId);
+            var userInDb = await _context.Users.FindAsync(UserModel.UserId);
             if (userInDb == null)
                 return NotFound();
 
-            userInDb.NormalName = User.NormalName;
-            userInDb.Email = User.Email;
-            userInDb.Username = User.Username;
-            userInDb.PasswordHash = User.PasswordHash;
-            userInDb.Address = User.Address;
-            userInDb.PhoneNumber = User.PhoneNumber;
-            userInDb.Gender = User.Gender;
-            userInDb.BirthDate = User.BirthDate;
-            userInDb.Status = User.Status;
+            userInDb.NormalName = UserModel.NormalName;
+            userInDb.Email = UserModel.Email;
+            userInDb.Username = UserModel.Username;
+            userInDb.PasswordHash = UserModel.PasswordHash;
+            userInDb.Address = UserModel.Address;
+            userInDb.PhoneNumber = UserModel.PhoneNumber;
+            userInDb.Gender = UserModel.Gender;
+            userInDb.BirthDate = UserModel.BirthDate;
+            userInDb.Status = UserModel.Status;
 
             await _context.SaveChangesAsync();
             return RedirectToPage("/Admin/User/Index");

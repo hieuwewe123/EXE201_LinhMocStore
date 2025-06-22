@@ -26,9 +26,14 @@ namespace EXE201_LinhMocStore.Pages.Admin.Blog
             return Page();
         }
 
-
         public async Task<IActionResult> OnPostAsync()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             if (!ModelState.IsValid)
                 return Page();
 

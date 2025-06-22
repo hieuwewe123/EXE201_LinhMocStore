@@ -35,7 +35,7 @@
             <h3 class="empty-orders-title">Bạn chưa có đơn hàng nào</h3>
             <p class="empty-orders-description">Hãy khám phá các sản phẩm phong thủy tuyệt đẹp của chúng tôi</p>
             <div class="empty-orders-actions">
-                <a href="/UserSite/Products" class="btn btn-primary btn-lg">
+                <a href="/Products" class="btn btn-primary btn-lg">
                     <i class="fas fa-gem me-2"></i>Khám phá sản phẩm
                 </a>
                 <a href="/" class="btn btn-outline-primary btn-lg">
@@ -150,24 +150,39 @@
 
 @section Scripts {
     <script>
-        // Function to show toast messages (giữ lại để hiển thị thông báo nếu cần)
-        function showToast(message, isError = false) {
-            const toast = document.createElement('div');
-            toast.className = `toast-message ${isError ? 'error' : 'success'}`;
-            toast.innerHTML = `
-                <i class="fas ${isError ? 'fa-times-circle' : 'fa-check-circle'} me-2"></i>
-                ${message}
-            `;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.classList.add('show');
-            }, 100);
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-                setTimeout(() => toast.remove(), 300);
-            }, 3000);
+        const isLoggedIn = @(Model.isLoggedIn ? "true" : "false");
+        
+        // Badge sẽ được khởi tạo tự động bởi site.js
+        
+        // Function to show order details
+        function showOrderDetails(orderId) {
+            window.location.href = `/UserSite/OrderDetails?orderId=${orderId}`;
+        }
+        
+        // Function to get status badge class
+        function getStatusBadgeClass(status) {
+            switch(status) {
+                case 'Pending': return 'bg-warning';
+                case 'AwaitingConfirmation': return 'bg-info';
+                case 'Confirmed': return 'bg-primary';
+                case 'Shipped': return 'bg-info';
+                case 'Delivered': return 'bg-success';
+                case 'Cancelled': return 'bg-danger';
+                default: return 'bg-secondary';
+            }
+        }
+        
+        // Function to get status text
+        function getStatusText(status) {
+            switch(status) {
+                case 'Pending': return 'Chờ xử lý';
+                case 'AwaitingConfirmation': return 'Chờ xác nhận';
+                case 'Confirmed': return 'Đã xác nhận';
+                case 'Shipped': return 'Đang giao';
+                case 'Delivered': return 'Đã giao';
+                case 'Cancelled': return 'Đã hủy';
+                default: return status;
+            }
         }
     </script>
 }

@@ -9,7 +9,7 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
         private readonly PhongThuyShopContext _context;
 
         [BindProperty]
-        public Models.User User { get; set; } = new();
+        public Models.User UserModel { get; set; } = new();
 
         public CreateModel(PhongThuyShopContext context)
         {
@@ -28,10 +28,16 @@ namespace EXE201_LinhMocStore.Pages.Admin.User
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             if (!ModelState.IsValid)
                 return Page();
 
-            _context.Users.Add(User);
+            _context.Users.Add(UserModel);
             await _context.SaveChangesAsync();
             return RedirectToPage("/Admin/User/Index");
         }

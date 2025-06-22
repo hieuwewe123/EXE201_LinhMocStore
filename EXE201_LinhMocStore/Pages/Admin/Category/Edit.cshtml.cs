@@ -18,23 +18,26 @@ namespace EXE201_LinhMocStore.Pages.Admin.Category
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             Category = await _context.Categories.FindAsync(id);
             if (Category == null)
                 return NotFound();
             return Page();
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnPostAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task<IActionResult> OnPostAsync()
-        {
             var catInDb = await _context.Categories.FindAsync(Category.CategoryId);
             if (catInDb == null)
                 return NotFound();

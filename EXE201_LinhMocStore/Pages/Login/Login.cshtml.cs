@@ -26,7 +26,7 @@ namespace EXE201_LinhMocStore.Pages.Login
 
         public void OnGet()
         {
-            // Nếu user đã đăng nhập, chuyển hướng về trang chủ hoặc returnUrl
+            // Nếu user đã đăng nhập, chuyển hướng về trang home hoặc returnUrl
             if (!string.IsNullOrEmpty(HttpContext.Session.GetString("Username")))
             {
                 if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
@@ -54,13 +54,15 @@ namespace EXE201_LinhMocStore.Pages.Login
                 else
                     HttpContext.Session.SetString("UserRole", "User");
 
-                // Nếu có cartItems trong localStorage, chuyển hướng sang trang trung gian để đồng bộ
-                string syncUrl = "/UserSite/Cart?sync=1";
+                // Chuyển hướng trực tiếp đến trang home
                 if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
                 {
-                    syncUrl += "&returnUrl=" + System.Net.WebUtility.UrlEncode(ReturnUrl);
+                    return Redirect(ReturnUrl);
                 }
-                return Redirect(syncUrl);
+                else
+                {
+                    return Redirect("/");
+                }
             }
             else
             {

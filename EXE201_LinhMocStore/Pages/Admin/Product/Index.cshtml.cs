@@ -14,19 +14,17 @@ namespace EXE201_LinhMocStore.Pages.Admin.Product
         {
             _context = context;
         }
-        public IActionResult OnGet()
+
+        public async Task<IActionResult> OnGetAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
-            return Page();
-        }
 
-        public async Task OnGetAsync()
-        {
             Products = await _context.Products.Include(p => p.Category).ToListAsync();
+            return Page();
         }
     }
 }

@@ -4,37 +4,37 @@
     Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 <h1 class="mt-4">Sửa người dùng</h1>
-@if (Model.User != null)
+@if (Model.UserModel != null)
 {
     <form method="post">
-        <input type="hidden" asp-for="User.UserId" />
+        <input type="hidden" asp-for="UserModel.UserId" />
         <div class="mb-3">
-            <label asp-for="User.NormalName" class="form-label"></label>
-            <input asp-for="User.NormalName" class="form-control" />
+            <label asp-for="UserModel.NormalName" class="form-label"></label>
+            <input asp-for="UserModel.NormalName" class="form-control" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.Email" class="form-label"></label>
-            <input asp-for="User.Email" class="form-control" />
+            <label asp-for="UserModel.Email" class="form-label"></label>
+            <input asp-for="UserModel.Email" class="form-control" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.Username" class="form-label"></label>
-            <input asp-for="User.Username" class="form-control" />
+            <label asp-for="UserModel.Username" class="form-label"></label>
+            <input asp-for="UserModel.Username" class="form-control" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.PasswordHash" class="form-label"></label>
-            <input asp-for="User.PasswordHash" class="form-control" type="password" />
+            <label asp-for="UserModel.PasswordHash" class="form-label"></label>
+            <input asp-for="UserModel.PasswordHash" class="form-control" type="password" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.Address" class="form-label"></label>
-            <input asp-for="User.Address" class="form-control" />
+            <label asp-for="UserModel.Address" class="form-label"></label>
+            <input asp-for="UserModel.Address" class="form-control" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.PhoneNumber" class="form-label"></label>
-            <input asp-for="User.PhoneNumber" class="form-control" />
+            <label asp-for="UserModel.PhoneNumber" class="form-label"></label>
+            <input asp-for="UserModel.PhoneNumber" class="form-control" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.Gender" class="form-label"></label>
-            <select asp-for="User.Gender" class="form-select">
+            <label asp-for="UserModel.Gender" class="form-label"></label>
+            <select asp-for="UserModel.Gender" class="form-select">
                 <option value="">-- Chọn giới tính --</option>
                 <option value="Nam">Nam</option>
                 <option value="Nữ">Nữ</option>
@@ -42,12 +42,12 @@
             </select>
         </div>
         <div class="mb-3">
-            <label asp-for="User.BirthDate" class="form-label"></label>
-            <input asp-for="User.BirthDate" class="form-control" type="date" />
+            <label asp-for="UserModel.BirthDate" class="form-label"></label>
+            <input asp-for="UserModel.BirthDate" class="form-control" type="date" />
         </div>
         <div class="mb-3">
-            <label asp-for="User.Status" class="form-label"></label>
-            <input asp-for="User.Status" class="form-control" />
+            <label asp-for="UserModel.Status" class="form-label"></label>
+            <input asp-for="UserModel.Status" class="form-control" />
         </div>
         <button type="submit" class="btn btn-success">Lưu</button>
         <a href="/admin/user" class="btn btn-secondary">Quay lại</a>

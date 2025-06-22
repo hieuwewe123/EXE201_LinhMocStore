@@ -29,6 +29,7 @@ namespace EXE201_LinhMocStore.Pages.UserSite
         public Order Order { get; set; } = new Order();
         public List<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
         public Payment? Payment { get; set; }
+        public bool isLoggedIn { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int orderId)
         {
@@ -64,7 +65,30 @@ namespace EXE201_LinhMocStore.Pages.UserSite
             Payment = await _context.Payments
                 .FirstOrDefaultAsync(p => p.OrderId == orderId);
 
+            // Set login status
+            isLoggedIn = true; // User đã đăng nhập mới vào được trang này
+
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostGetCartCountAsync()
+        {
+            if (!IsUserLoggedIn)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == CurrentUserId.Value);
+            if (cart == null)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cartItemCount = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+
+            return new JsonResult(new { count = cartItemCount });
         }
     }
 } 

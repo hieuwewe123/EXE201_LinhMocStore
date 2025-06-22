@@ -2,40 +2,190 @@
 @model EXE201_LinhMocStore.Pages.Admin.Order.EditModel
 @{
     Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = $"Cập nhật đơn hàng #{Model.Order?.OrderId} - Admin";
 }
-<h1 class="mt-4">Sửa đơn hàng</h1>
-@if (Model.Order != null)
-{
-    <form method="post">
-        <input type="hidden" asp-for="Order.OrderId" />
-        <div class="mb-3">
-            <label asp-for="Order.UserId" class="form-label"></label>
-            <select asp-for="Order.UserId" class="form-select">
-                @foreach (var user in Model.Users)
-                {
-                    <option value="@user.UserId" selected="@(user.UserId == Model.Order.UserId)">
-                        @user.NormalName
-                    </option>
-                }
-            </select>
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mt-4">
+            <i class="fas fa-edit me-2"></i>Cập nhật đơn hàng #@Model.Order?.OrderId
+        </h1>
+        <div class="d-flex gap-2">
+            <a class="btn btn-outline-secondary" href="/admin/order">
+                <i class="fas fa-arrow-left me-1"></i>Quay lại
+            </a>
+            <a class="btn btn-info" href="/admin/order/details?id=@Model.Order?.OrderId">
+                <i class="fas fa-eye me-1"></i>Xem chi tiết
+            </a>
         </div>
-        <div class="mb-3">
-            <label asp-for="Order.OrderDate" class="form-label"></label>
-            <input asp-for="Order.OrderDate" class="form-control" type="date" />
+    </div>
+
+    @if (Model.Order != null)
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-edit me-1"></i>
+                        Thông tin đơn hàng
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            <input type="hidden" asp-for="Order.OrderId" />
+                            
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Khách hàng</label>
+                                        <input type="text" class="form-control" value="@Model.Order.User?.NormalName (@Model.Order.User?.Email)" readonly />
+                                        <small class="text-muted">Không thể thay đổi thông tin khách hàng</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Ngày đặt hàng</label>
+                                        <input type="text" class="form-control" value="@Model.Order.OrderDate.ToString("dd/MM/yyyy HH:mm")" readonly />
+                                        <small class="text-muted">Không thể thay đổi ngày đặt hàng</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Order.Status" class="form-label">Trạng thái</label>
+                                        <select asp-for="Order.Status" class="form-select" required>
+                                            <option value="PendingPayment" selected="@(Model.Order.Status == "PendingPayment")">Chờ thanh toán</option>
+                                            <option value="AwaitingConfirmation" selected="@(Model.Order.Status == "AwaitingConfirmation")">Chờ xác nhận</option>
+                                            <option value="Confirmed" selected="@(Model.Order.Status == "Confirmed")">Đã xác nhận</option>
+                                            <option value="Shipped" selected="@(Model.Order.Status == "Shipped")">Đang giao</option>
+                                            <option value="Delivered" selected="@(Model.Order.Status == "Delivered")">Đã giao</option>
+                                            <option value="Cancelled" selected="@(Model.Order.Status == "Cancelled")">Đã hủy</option>
+                                        </select>
+                                        <span asp-validation-for="Order.Status" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label class="form-label">Tổng tiền (VNĐ)</label>
+                                        <input type="text" class="form-control" value="@Model.Order.TotalAmount?.ToString("N0") đ" readonly />
+                                        <small class="text-muted">Không thể thay đổi tổng tiền</small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <hr>
+
+                            <h6 class="text-muted mb-3">Thông tin giao hàng</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Order.ReceiverName" class="form-label">Tên người nhận</label>
+                                        <input asp-for="Order.ReceiverName" class="form-control" required />
+                                        <span asp-validation-for="Order.ReceiverName" class="text-danger"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label asp-for="Order.ReceiverPhone" class="form-label">Số điện thoại</label>
+                                        <input asp-for="Order.ReceiverPhone" class="form-control" required />
+                                        <span asp-validation-for="Order.ReceiverPhone" class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Order.ShippingAddress" class="form-label">Địa chỉ giao hàng</label>
+                                <textarea asp-for="Order.ShippingAddress" class="form-control" rows="3" required></textarea>
+                                <span asp-validation-for="Order.ShippingAddress" class="text-danger"></span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label asp-for="Order.DeliveryNote" class="form-label">Ghi chú giao hàng</label>
+                                <textarea asp-for="Order.DeliveryNote" class="form-control" rows="2"></textarea>
+                                <span asp-validation-for="Order.DeliveryNote" class="text-danger"></span>
+                            </div>
+
+                            <div class="d-flex gap-2">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save me-1"></i>Lưu thay đổi
+                                </button>
+                                <a href="/admin/order" class="btn btn-outline-secondary">
+                                    <i class="fas fa-times me-1"></i>Hủy
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Thông tin hiện tại
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <strong>Mã đơn hàng:</strong><br>
+                            <span class="text-primary">#@Model.Order.OrderId</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Khách hàng:</strong><br>
+                            <span>@Model.Order.User?.NormalName</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Ngày đặt:</strong><br>
+                            <span>@Model.Order.OrderDate.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Trạng thái hiện tại:</strong><br>
+                            @{
+                                var statusClass = Model.Order.Status switch
+                                {
+                                    "PendingPayment" => "badge bg-warning",
+                                    "AwaitingConfirmation" => "badge bg-info",
+                                    "Confirmed" => "badge bg-primary",
+                                    "Shipped" => "badge bg-secondary",
+                                    "Delivered" => "badge bg-success",
+                                    "Cancelled" => "badge bg-danger",
+                                    _ => "badge bg-secondary"
+                                };
+                                var statusText = Model.Order.Status switch
+                                {
+                                    "PendingPayment" => "Chờ thanh toán",
+                                    "AwaitingConfirmation" => "Chờ xác nhận",
+                                    "Confirmed" => "Đã xác nhận",
+                                    "Shipped" => "Đang giao",
+                                    "Delivered" => "Đã giao",
+                                    "Cancelled" => "Đã hủy",
+                                    _ => Model.Order.Status
+                                };
+                            }
+                            <span class="@statusClass">@statusText</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong>Tổng tiền:</strong><br>
+                            <span class="h5 text-primary">@Model.Order.TotalAmount?.ToString("N0") đ</span>
+                        </div>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            <strong>Lưu ý:</strong> Admin chỉ có thể thay đổi trạng thái đơn hàng và thông tin địa chỉ giao hàng.
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="mb-3">
-            <label asp-for="Order.Status" class="form-label"></label>
-            <input asp-for="Order.Status" class="form-control" />
+    }
+    else
+    {
+        <div class="alert alert-danger">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            Không tìm thấy đơn hàng.
         </div>
-        <div class="mb-3">
-            <label asp-for="Order.TotalAmount" class="form-label"></label>
-            <input asp-for="Order.TotalAmount" class="form-control" type="number" step="0.01" />
-        </div>
-        <button type="submit" class="btn btn-success">Lưu</button>
-        <a href="/admin/order" class="btn btn-secondary">Quay lại</a>
-    </form>
-}
-else
-{
-    <div class="alert alert-danger">Không tìm thấy đơn hàng.</div>
+    }
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
 }

@@ -18,14 +18,6 @@
         </div>
     </div>
     
-    @if (@Model.Message != null)
-    {
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-            <i class="fas fa-exclamation-circle me-2"></i>
-            @Model.Message
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    }
 
     @if (!Model.CartProducts.Any())
     {
@@ -36,7 +28,7 @@
             <h3 class="empty-cart-title">Giỏ hàng của bạn đang trống</h3>
             <p class="empty-cart-description">Hãy khám phá các sản phẩm phong thủy tuyệt đẹp của chúng tôi</p>
             <div class="empty-cart-actions">
-                <a href="/UserSite/Products" class="btn btn-primary btn-lg">
+                <a href="/Products" class="btn btn-primary btn-lg">
                     <i class="fas fa-gem me-2"></i>Khám phá sản phẩm
                 </a>
                 <a href="/" class="btn btn-outline-primary btn-lg">
@@ -266,6 +258,73 @@
                 }
             </div>
 
+            <!-- Thông tin địa chỉ giao hàng -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-map-marker-alt text-primary me-2"></i>
+                        Địa chỉ giao hàng
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="addressOption" id="currentAddress" value="current" checked>
+                                <label class="form-check-label" for="currentAddress">
+                                    <strong>Sử dụng địa chỉ hiện tại</strong>
+                                </label>
+                                <div class="mt-2 text-muted small">
+                                    <i class="fas fa-user me-1"></i> @(string.IsNullOrEmpty(Model.CurrentUser?.NormalName) ? "Chưa có tên" : Model.CurrentUser.NormalName)<br>
+                                    <i class="fas fa-phone me-1"></i> @(string.IsNullOrEmpty(Model.CurrentUser?.PhoneNumber) ? "Chưa có số điện thoại" : Model.CurrentUser.PhoneNumber)<br>
+                                    <i class="fas fa-map-marker-alt me-1"></i> @(string.IsNullOrEmpty(Model.CurrentUser?.Address) ? "Chưa có địa chỉ" : Model.CurrentUser.Address)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="radio" name="addressOption" id="newAddress" value="new">
+                                <label class="form-check-label" for="newAddress">
+                                    <strong>Nhập địa chỉ mới</strong>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Form nhập địa chỉ mới -->
+                    <div id="newAddressForm" class="mt-3" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="receiverName" class="form-label">Tên người nhận <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="receiverName" name="receiverName" value="@Model.CurrentUser?.NormalName">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="receiverPhone" class="form-label">Số điện thoại <span class="text-danger">*</span></label>
+                                <input type="tel" class="form-control" id="receiverPhone" name="receiverPhone" value="@Model.CurrentUser?.PhoneNumber">
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="receiverAddress" class="form-label">Địa chỉ giao hàng <span class="text-danger">*</span></label>
+                            <textarea class="form-control" id="receiverAddress" name="receiverAddress" rows="3" placeholder="Nhập địa chỉ chi tiết (số nhà, đường, phường/xã, quận/huyện, tỉnh/thành phố)"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="deliveryNote" class="form-label">Ghi chú giao hàng</label>
+                            <textarea class="form-control" id="deliveryNote" name="deliveryNote" rows="2" placeholder="Hướng dẫn giao hàng, thời gian nhận hàng..."></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Hiển thị địa chỉ đã chọn -->
+                    <div id="selectedAddressInfo" class="mt-3 p-3 bg-light rounded">
+                        <h6 class="mb-2"><i class="fas fa-check-circle text-success me-2"></i>Địa chỉ giao hàng:</h6>
+                        <div id="addressDisplay">
+                            <strong>@Model.CurrentUser?.NormalName</strong><br>
+                            <i class="fas fa-phone me-1"></i> @Model.CurrentUser?.PhoneNumber<br>
+                            <i class="fas fa-map-marker-alt me-1"></i> @(string.IsNullOrEmpty(Model.CurrentUser?.Address) ? "Chưa có địa chỉ" : Model.CurrentUser.Address)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <!-- Cart Summary -->
             <div class="cart-summary">
                 <div class="row">
@@ -274,11 +333,6 @@
                             <a href="/UserSite/Products" class="btn btn-outline-primary">
                                 <i class="fas fa-arrow-left me-2"></i>Tiếp tục mua sắm
                             </a>
-                            <button type="button" 
-                                    class="btn btn-outline-danger delete-selected-btn"
-                                    data-confirm="Bạn có chắc chắn muốn xóa các sản phẩm đã chọn?">
-                                <i class="fas fa-trash-alt me-2"></i>Xóa đã chọn
-                            </button>
                         </div>
                     </div>
                     <div class="col-lg-4">
@@ -319,6 +373,10 @@
 
 @section Scripts {
     <script>
+        const isLoggedIn = @(Model.isLoggedIn ? "true" : "false");
+        
+        // Badge sẽ được khởi tạo tự động bởi site.js
+        
         // Debounce function to prevent spamming requests
         function debounce(func, delay) {
             let timeout;
@@ -371,7 +429,19 @@
         }
 
         function getSelectedIds() {
-            return Array.from(document.querySelectorAll('.item-checkbox:checked')).map(cb => parseInt(cb.value));
+            const checkboxes = document.querySelectorAll('.item-checkbox:checked');
+            const ids = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            console.log('Selected checkboxes:', checkboxes.length);
+            console.log('Selected IDs:', ids);
+            
+            // Check for duplicates
+            const uniqueIds = [...new Set(ids)];
+            if (uniqueIds.length !== ids.length) {
+                console.warn('Duplicate IDs found! Original:', ids, 'Unique:', uniqueIds);
+            }
+            
+            return uniqueIds; // Return unique IDs to prevent duplicates
         }
 
         async function updateCartItem(id, quantity) {
@@ -431,6 +501,15 @@
                     remainingElements.forEach(el => el.textContent = data.stock || maxStock);
 
                     updateTotalsUI(data.grandTotal);
+                    
+                    // Cập nhật số lượng giỏ hàng trong badge nếu có
+                    if (data.totalCartItems !== undefined) {
+                        const badge = document.getElementById('cartBadge');
+                        if (badge) {
+                            badge.textContent = data.totalCartItems;
+                            badge.style.display = data.totalCartItems > 0 ? 'block' : 'none';
+                        }
+                    }
                     
                     // Show success message for quantity changes
                     if (quantity !== parseInt(input.value)) {
@@ -568,6 +647,15 @@
                     document.querySelectorAll(`[data-cart-item-id="${id}"]`).forEach(el => el.remove());
                     showToast('Đã xóa sản phẩm khỏi giỏ hàng.');
                     
+                    // Cập nhật số lượng giỏ hàng trong badge
+                    if (data.totalCartItems !== undefined) {
+                        const badge = document.getElementById('cartBadge');
+                        if (badge) {
+                            badge.textContent = data.totalCartItems;
+                            badge.style.display = data.totalCartItems > 0 ? 'block' : 'none';
+                        }
+                    }
+                    
                     // Check if cart is now empty
                     const remainingItems = document.querySelectorAll('[data-cart-item-id]');
                     if (remainingItems.length === 0) {
@@ -587,66 +675,65 @@
             }
         }
         
-        async function updateSelection() {
-            const selectedIds = getSelectedIds();
-            const allCheckboxes = document.querySelectorAll('.item-checkbox');
-            const selectAllCheckbox = document.getElementById('selectAll');
-            
-            if(selectAllCheckbox) {
-               selectAllCheckbox.checked = allCheckboxes.length > 0 && selectedIds.length === allCheckboxes.length;
-            }
-            
-            // Also sync mobile/desktop checkboxes
-            allCheckboxes.forEach(cb => {
-                const mobileId = `checkbox-mobile-${cb.value}`;
-                const desktopId = `checkbox-${cb.value}`;
-                const otherId = cb.id === mobileId ? desktopId : mobileId;
-                const otherCheckbox = document.getElementById(otherId);
-                if (otherCheckbox) {
-                    otherCheckbox.checked = cb.checked;
+        function calculateGrandTotal(selectedIds) {
+            let total = 0;
+            selectedIds.forEach(id => {
+                const input = document.querySelector(`input[name="Quantities[${id}]"]`);
+                if (input) {
+                    const quantity = parseInt(input.value) || 1;
+                    const priceElement = document.querySelector(`#total-${id} .total-amount`);
+                    if (priceElement) {
+                        const priceText = priceElement.textContent.replace(/[^\d]/g, '');
+                        const price = parseInt(priceText) || 0;
+                        total += price;
+                    }
                 }
             });
+            return total;
+        }
 
-            // If no items selected, reset totals
-            if (selectedIds.length === 0) {
-                updateTotalsUI(0);
-                return;
-            }
-
-            const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
-            const items = selectedIds.map(id => {
-                const input = document.querySelector(`input[name="Quantities[${id}]"]`);
-                if (!input) return null;
-                return { Id: id, Quantity: parseInt(input.value) || 1 };
-            }).filter(item => item !== null);
-
-            if (items.length === 0) {
-                updateTotalsUI(0);
-                return;
-            }
-
-            try {
-                 const res = await makeRequest('?handler=GetTotal', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': token
-                    },
-                    body: JSON.stringify({ Items: items })
-                });
-                const data = await res.json();
-                if(data.success) {
-                    updateTotalsUI(data.grandTotal);
-                } else {
-                    showToast(data.message || 'Lỗi khi tính tổng tiền', true);
+        function updateSelection() {
+            const selectedIds = getSelectedIds();
+            const grandTotal = calculateGrandTotal(selectedIds);
+            
+            // Sync checkboxes between desktop and mobile views
+            selectedIds.forEach(id => {
+                const desktopCheckbox = document.getElementById(`checkbox-${id}`);
+                const mobileCheckbox = document.getElementById(`checkbox-mobile-${id}`);
+                
+                if (desktopCheckbox && mobileCheckbox) {
+                    desktopCheckbox.checked = true;
+                    mobileCheckbox.checked = true;
                 }
-            } catch (error) {
-                console.error('Update selection error:', error);
-                showToast('Lỗi khi cập nhật tổng tiền', true);
-            }
+            });
+            
+            // Uncheck checkboxes that are not in selectedIds
+            const allCheckboxes = document.querySelectorAll('.item-checkbox');
+            allCheckboxes.forEach(checkbox => {
+                const id = parseInt(checkbox.value);
+                if (!selectedIds.includes(id)) {
+                    checkbox.checked = false;
+                }
+            });
+            
+            updateTotalsUI(grandTotal);
         }
         
+        // Global flag to prevent multiple checkout requests
+        let isCheckoutInProgress = false;
+        let checkoutRequestId = 0;
+        let eventListenersInitialized = false;
+
         async function checkout() {
+            // Prevent multiple checkout requests
+            if (isCheckoutInProgress) {
+                console.log('Checkout already in progress, ignoring request');
+                return;
+            }
+            
+            const currentRequestId = ++checkoutRequestId;
+            console.log(`Starting checkout request #${currentRequestId}`);
+            
             const selectedIds = getSelectedIds();
             
             if (selectedIds.length === 0) {
@@ -657,25 +744,15 @@
             // Validate quantities and build items array
             const items = selectedIds.map(id => {
                 const input = document.querySelector(`input[name="Quantities[${id}]"]`);
-                if (!input) {
-                    showToast('Không tìm thấy thông tin sản phẩm', true);
-                    return null;
-                }
-                
-                const quantity = parseInt(input.value) || 1;
-                const maxStock = parseInt(input.getAttribute('max')) || 0;
-                
-                if (quantity > maxStock) {
-                    showToast(`Sản phẩm "${input.getAttribute('data-product-name')}" chỉ còn ${maxStock} trong kho`, true);
-                    return null;
-                }
-                
-                return { Id: id, Quantity: quantity };
+                if (!input) return null;
+                return { Id: id, Quantity: parseInt(input.value) || 1 };
             }).filter(item => item !== null);
             
             if (items.length === 0) {
                 return;
             }
+            
+            console.log(`Request #${currentRequestId} - Final items to send:`, JSON.stringify(items, null, 2));
             
             const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
             const checkoutBtn = document.getElementById('checkoutBtn');
@@ -685,12 +762,21 @@
                 return;
             }
 
+            // Prevent double submission
+            if (checkoutBtn.disabled) {
+                console.log(`Request #${currentRequestId} - Checkout button is already disabled, preventing double submission`);
+                return;
+            }
+
+            // Set global flag
+            isCheckoutInProgress = true;
+
             try {
                 // Set loading state
                 checkoutBtn.disabled = true;
                 checkoutBtn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Đang xử lý...';
                 
-                console.log('Sending checkout request with items:', items);
+                console.log(`Request #${currentRequestId} - Sending checkout request with items:`, items);
                 
                 const res = await makeRequest('?handler=CheckoutAjax', {
                     method: 'POST',
@@ -701,14 +787,14 @@
                     body: JSON.stringify({ Items: items })
                 });
                 
-                console.log('Checkout response status:', res.status);
+                console.log(`Request #${currentRequestId} - Checkout response status:`, res.status);
                 
                 if (!res.ok) {
                     throw new Error(`HTTP error! status: ${res.status}`);
                 }
                 
                 const data = await res.json();
-                console.log('Checkout response data:', data);
+                console.log(`Request #${currentRequestId} - Checkout response data:`, data);
                 
                 if(data.success) {
                     redirectToCheckout(data.redirectUrl || '/UserSite/Checkout');
@@ -717,7 +803,7 @@
                     resetCheckoutButton(checkoutBtn);
                 }
             } catch(error) {
-                console.error('Checkout error:', error);
+                console.error(`Request #${currentRequestId} - Checkout error:`, error);
                 
                 // Log more details about the error
                 if (error.name === 'TypeError' && error.message.includes('JSON')) {
@@ -731,6 +817,10 @@
                 }
                 
                 resetCheckoutButton(checkoutBtn);
+            } finally {
+                // Reset global flag
+                isCheckoutInProgress = false;
+                console.log(`Request #${currentRequestId} - Checkout completed`);
             }
         }
 
@@ -886,6 +976,15 @@
 
         // Initial setup on page load
         document.addEventListener('DOMContentLoaded', () => {
+            // Prevent multiple initialization
+            if (eventListenersInitialized) {
+                console.log('Event listeners already initialized, skipping');
+                return;
+            }
+            
+            console.log('Initializing event listeners...');
+            eventListenersInitialized = true;
+            
             // Set initial totals and checkout button state
             updateSelection();
             // Update quantity controls state
@@ -936,9 +1035,18 @@
                     return;
                 }
                 
-                // Checkout button
+                // Checkout button - prevent multiple clicks
                 if (e.target.closest('.checkout-btn')) {
                     e.preventDefault();
+                    e.stopImmediatePropagation();
+                    
+                    const checkoutBtn = e.target.closest('.checkout-btn');
+                    if (checkoutBtn.disabled) {
+                        console.log('Checkout button is already disabled, preventing double click');
+                        return;
+                    }
+                    
+                    console.log('Checkout button clicked, calling checkout function');
                     checkout();
                     return;
                 }
@@ -961,6 +1069,264 @@
                     validateQuantityInput(cartItemId);
                 }
             }, true);
+            
+            console.log('Event listeners initialized successfully');
+        });
+
+        // Xử lý chọn địa chỉ giao hàng
+        document.addEventListener('DOMContentLoaded', function() {
+            const currentAddressRadio = document.getElementById('currentAddress');
+            const newAddressRadio = document.getElementById('newAddress');
+            const newAddressForm = document.getElementById('newAddressForm');
+            const addressDisplay = document.getElementById('addressDisplay');
+            
+            // Địa chỉ hiện tại
+            const currentAddress = {
+                name: '@(string.IsNullOrEmpty(Model.CurrentUser?.NormalName) ? "Chưa có tên" : Model.CurrentUser.NormalName)',
+                phone: '@(string.IsNullOrEmpty(Model.CurrentUser?.PhoneNumber) ? "Chưa có số điện thoại" : Model.CurrentUser.PhoneNumber)',
+                address: '@(string.IsNullOrEmpty(Model.CurrentUser?.Address) ? "Chưa có địa chỉ" : Model.CurrentUser.Address)'
+            };
+
+            function updateAddressDisplay() {
+                if (currentAddressRadio.checked) {
+                    newAddressForm.style.display = 'none';
+                    addressDisplay.innerHTML = `
+                        <strong>${currentAddress.name}</strong><br>
+                        <i class="fas fa-phone me-1"></i> ${currentAddress.phone}<br>
+                        <i class="fas fa-map-marker-alt me-1"></i> ${currentAddress.address}
+                    `;
+                } else {
+                    newAddressForm.style.display = 'block';
+                    updateNewAddressDisplay();
+                }
+            }
+
+            function updateNewAddressDisplay() {
+                const name = document.getElementById('receiverName').value || 'Chưa nhập tên';
+                const phone = document.getElementById('receiverPhone').value || 'Chưa nhập số điện thoại';
+                const address = document.getElementById('receiverAddress').value || 'Chưa nhập địa chỉ';
+                
+                addressDisplay.innerHTML = `
+                    <strong>${name}</strong><br>
+                    <i class="fas fa-phone me-1"></i> ${phone}<br>
+                    <i class="fas fa-map-marker-alt me-1"></i> ${address}
+                `;
+            }
+
+            // Validation cho địa chỉ mới
+            function validateNewAddress() {
+                if (!newAddressRadio.checked) {
+                    // Kiểm tra địa chỉ hiện tại - check tất cả trường
+                    if (!currentAddress.name || currentAddress.name === 'Chưa có tên' || 
+                        !currentAddress.phone || currentAddress.phone === 'Chưa có số điện thoại' ||
+                        !currentAddress.address || currentAddress.address === 'Chưa có địa chỉ') {
+                        // Hiển thị alert với 2 lựa chọn
+                        showAddressAlert();
+                        return false;
+                    }
+                    return true; // Sử dụng địa chỉ hiện tại
+                }
+
+                const name = document.getElementById('receiverName').value.trim();
+                const phone = document.getElementById('receiverPhone').value.trim();
+                const address = document.getElementById('receiverAddress').value.trim();
+
+                if (!name) {
+                    showToast('Vui lòng nhập tên người nhận', true);
+                    return false;
+                }
+
+                if (!phone) {
+                    showToast('Vui lòng nhập số điện thoại', true);
+                    return false;
+                }
+
+                if (!address) {
+                    showToast('Vui lòng nhập địa chỉ giao hàng', true);
+                    return false;
+                }
+
+                return true;
+            }
+
+            // Hàm hiển thị alert khi địa chỉ hiện tại thiếu thông tin
+            function showAddressAlert() {
+                // Tạo modal alert
+                const alertModal = document.createElement('div');
+                alertModal.className = 'modal fade';
+                alertModal.id = 'addressAlertModal';
+                alertModal.innerHTML = `
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content">
+                            <div class="modal-header bg-warning text-dark">
+                                <h5 class="modal-title">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>
+                                    Thông tin địa chỉ không đầy đủ
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Địa chỉ hiện tại của bạn chưa đầy đủ thông tin để giao hàng.</p>
+                                <p>Bạn có thể:</p>
+                                <ul>
+                                    <li><strong>Cập nhật thông tin cá nhân</strong> trong trang hồ sơ</li>
+                                    <li><strong>Nhập địa chỉ mới</strong> cho đơn hàng này</li>
+                                </ul>
+                            </div>
+                            <div class="modal-footer">
+                                <a href="/profile" class="btn btn-primary">
+                                    <i class="fas fa-user-edit me-2"></i>Cập nhật hồ sơ
+                                </a>
+                                <button type="button" class="btn btn-success" onclick="switchToNewAddress()">
+                                    <i class="fas fa-plus me-2"></i>Nhập địa chỉ mới
+                                </button>
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                    <i class="fas fa-times me-2"></i>Đóng
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                document.body.appendChild(alertModal);
+                
+                // Hiển thị modal
+                const modal = new bootstrap.Modal(alertModal);
+                modal.show();
+                
+                // Xóa modal khi đóng
+                alertModal.addEventListener('hidden.bs.modal', function() {
+                    alertModal.remove();
+                });
+            }
+
+            // Hàm chuyển sang nhập địa chỉ mới
+            window.switchToNewAddress = function() {
+                // Đóng modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('addressAlertModal'));
+                if (modal) {
+                    modal.hide();
+                }
+                
+                // Chuyển sang chọn địa chỉ mới
+                document.getElementById('newAddress').checked = true;
+                updateAddressDisplay();
+                
+                // Focus vào ô nhập địa chỉ
+                setTimeout(() => {
+                    const addressInput = document.getElementById('receiverAddress');
+                    if (addressInput) {
+                        addressInput.focus();
+                    }
+                }, 300);
+            };
+
+            // Lấy thông tin địa chỉ đã chọn
+            function getSelectedAddress() {
+                if (currentAddressRadio.checked) {
+                    return {
+                        receiverName: currentAddress.name,
+                        receiverPhone: currentAddress.phone,
+                        shippingAddress: currentAddress.address,
+                        deliveryNote: ''
+                    };
+                } else {
+                    return {
+                        receiverName: document.getElementById('receiverName').value.trim(),
+                        receiverPhone: document.getElementById('receiverPhone').value.trim(),
+                        shippingAddress: document.getElementById('receiverAddress').value.trim(),
+                        deliveryNote: document.getElementById('deliveryNote').value.trim()
+                    };
+                }
+            }
+
+            // Gắn event listeners
+            if (currentAddressRadio) {
+                currentAddressRadio.addEventListener('change', updateAddressDisplay);
+            }
+            if (newAddressRadio) {
+                newAddressRadio.addEventListener('change', updateAddressDisplay);
+            }
+
+            // Cập nhật hiển thị khi nhập địa chỉ mới
+            const receiverNameInput = document.getElementById('receiverName');
+            const receiverPhoneInput = document.getElementById('receiverPhone');
+            const receiverAddressInput = document.getElementById('receiverAddress');
+
+            if (receiverNameInput) {
+                receiverNameInput.addEventListener('input', updateNewAddressDisplay);
+            }
+            if (receiverPhoneInput) {
+                receiverPhoneInput.addEventListener('input', updateNewAddressDisplay);
+            }
+            if (receiverAddressInput) {
+                receiverAddressInput.addEventListener('input', updateNewAddressDisplay);
+            }
+
+            // Override checkout function để thêm validation địa chỉ
+            const originalCheckoutBtn = document.getElementById('checkoutBtn');
+            if (originalCheckoutBtn) {
+                originalCheckoutBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Kiểm tra địa chỉ trước khi checkout
+                    if (!validateNewAddress()) {
+                        return;
+                    }
+
+                    // Lấy thông tin địa chỉ
+                    const addressInfo = getSelectedAddress();
+                    
+                    // Gọi hàm checkout gốc với thông tin địa chỉ
+                    performCheckout(addressInfo);
+                });
+            }
+
+            // Hàm checkout với thông tin địa chỉ
+            async function performCheckout(addressInfo) {
+                const selectedIds = getSelectedIds();
+                if (selectedIds.length === 0) {
+                    showToast('Vui lòng chọn sản phẩm để thanh toán', true);
+                    return;
+                }
+
+                const token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+                const items = selectedIds.map(id => {
+                    const input = document.querySelector(`input[data-cart-item-id="${id}"]`);
+                    return {
+                        Id: id,
+                        Quantity: parseInt(input.value) || 1
+                    };
+                });
+
+                try {
+                    const response = await makeRequest('?handler=CheckoutAjax', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': token
+                        },
+                        body: JSON.stringify({
+                            Items: items,
+                            AddressInfo: addressInfo
+                        })
+                    });
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showToast('Đơn hàng đã được tạo thành công!');
+                        setTimeout(() => {
+                            window.location.href = data.redirectUrl;
+                        }, 1000);
+                    } else {
+                        showToast(data.message, true);
+                    }
+                } catch (error) {
+                    console.error('Checkout error:', error);
+                    showToast('Có lỗi xảy ra khi tạo đơn hàng. Vui lòng thử lại.', true);
+                }
+            }
         });
     </script>
 }
@@ -1506,6 +1872,42 @@
 
         .cart-item-mobile-actions {
             margin-top: 1rem;
+        }
+
+        /* Address Alert Modal Styles */
+        #addressAlertModal .modal-content {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        #addressAlertModal .modal-header {
+            border-bottom: 1px solid rgba(255, 193, 7, 0.3);
+            border-radius: 15px 15px 0 0;
+        }
+
+        #addressAlertModal .modal-body {
+            padding: 1.5rem;
+        }
+
+        #addressAlertModal .modal-body ul {
+            margin-bottom: 0;
+        }
+
+        #addressAlertModal .modal-body li {
+            margin-bottom: 0.5rem;
+        }
+
+        #addressAlertModal .modal-footer {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+            border-radius: 0 0 15px 15px;
+            padding: 1rem 1.5rem;
+        }
+
+        #addressAlertModal .btn {
+            border-radius: 8px;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
         }
     </style>
 }

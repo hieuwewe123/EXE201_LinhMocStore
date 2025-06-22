@@ -27,8 +27,9 @@ namespace EXE201_LinhMocStore.Pages.UserSite
             get => !string.IsNullOrEmpty(HttpContext.Session.GetString("Username")) && CurrentUserId.HasValue;
         }
 
-        public List<Order> Orders { get; set; } = new List<Order>();
+        public List<Order> Orders { get; set; } = new();
         public string Message { get; set; } = string.Empty;
+        public bool isLoggedIn { get; set; }
 
         public async Task<IActionResult> OnGetAsync()
         {
@@ -44,6 +45,9 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 .Where(o => o.UserId == CurrentUserId.Value)
                 .OrderByDescending(o => o.OrderDate)
                 .ToListAsync();
+
+            // Set login status
+            isLoggedIn = true; // User đã đăng nhập mới vào được trang này
 
             // Load order details cho mỗi order
             foreach (var order in Orders)
@@ -137,6 +141,26 @@ namespace EXE201_LinhMocStore.Pages.UserSite
                 TempData["Message"] = "Có lỗi xảy ra khi hủy đơn hàng. Vui lòng thử lại.";
                 return RedirectToPage();
             }
+        }
+
+        public async Task<IActionResult> OnPostGetCartCountAsync()
+        {
+            if (!IsUserLoggedIn)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == CurrentUserId.Value);
+            if (cart == null)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cartItemCount = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+
+            return new JsonResult(new { count = cartItemCount });
         }
     }
 } 

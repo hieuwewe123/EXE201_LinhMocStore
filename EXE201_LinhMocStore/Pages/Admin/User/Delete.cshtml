@@ -4,13 +4,13 @@
     Layout = "~/Pages/Shared/_AdminLayout.cshtml";
 }
 <h1 class="mt-4">Xóa người dùng</h1>
-@if (Model.User != null)
+@if (Model.UserModel != null)
 {
     <div class="alert alert-warning">
-        Bạn có chắc chắn muốn xóa người dùng <strong>@Model.User.NormalName</strong>?
+        Bạn có chắc chắn muốn xóa người dùng <strong>@Model.UserModel.NormalName</strong>?
     </div>
     <form method="post">
-        <input type="hidden" asp-for="User.UserId" />
+        <input type="hidden" asp-for="UserModel.UserId" />
         <button type="submit" class="btn btn-danger">Xóa</button>
         <a href="/admin/user" class="btn btn-secondary">Hủy</a>
     </form>

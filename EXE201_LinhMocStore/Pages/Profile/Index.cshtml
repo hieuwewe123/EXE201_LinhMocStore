@@ -1,0 +1,322 @@
+@page
+@model EXE201_LinhMocStore.Pages.Profile.IndexModel
+@{
+    ViewData["Title"] = "Hồ sơ cá nhân - Linh Mộc Store";
+    var userRole = HttpContext.Session.GetString("UserRole");
+    var isAdmin = userRole == "Admin";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+}
+
+<div class="profile-container">
+    <div class="container py-5">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 mb-4">
+                <div class="card shadow-sm">
+                    <div class="card-body text-center">
+                        <div class="profile-avatar mb-3">
+                            <div class="avatar-circle">
+                                <i class="fas fa-user-circle fa-4x text-white"></i>
+                            </div>
+                        </div>
+                        <h5 class="card-title mb-1">@Model.CurrentUser?.NormalName</h5>
+                        <p class="text-muted mb-2">@Model.CurrentUser?.Email</p>
+                        <span class="badge bg-@(isAdmin ? "warning" : "primary")">
+                            @(isAdmin ? "Admin" : "Khách hàng")
+                        </span>
+                    </div>
+                    <div class="list-group list-group-flush">
+                        <a href="#profile" class="list-group-item list-group-item-action active" data-bs-toggle="list">
+                            <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                        </a>
+                        <a href="#security" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                            <i class="fas fa-lock me-2"></i>Bảo mật
+                        </a>
+                        @if (!isAdmin)
+                        {
+                            <a href="#orders" class="list-group-item list-group-item-action" data-bs-toggle="list">
+                                <i class="fas fa-shopping-bag me-2"></i>Lịch sử đơn hàng
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <div class="tab-content">
+                    <!-- Profile Information -->
+                    <div class="tab-pane fade show active" id="profile">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-user me-2"></i>Thông tin cá nhân
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+                                {
+                                    <div class="alert alert-success alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-check-circle me-2"></i>@Model.SuccessMessage
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                                {
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>@Model.ErrorMessage
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
+                                }
+
+                                <form method="post" asp-page-handler="UpdateProfile">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="ProfileInput.Username" class="form-label">Tên đăng nhập</label>
+                                                <input asp-for="ProfileInput.Username" class="form-control" readonly />
+                                                <small class="text-muted">Tên đăng nhập không thể thay đổi</small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="ProfileInput.Email" class="form-label">Email</label>
+                                                <input asp-for="ProfileInput.Email" class="form-control" type="email" required />
+                                                <span asp-validation-for="ProfileInput.Email" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="ProfileInput.NormalName" class="form-label">Họ và tên</label>
+                                                <input asp-for="ProfileInput.NormalName" class="form-control" required />
+                                                <span asp-validation-for="ProfileInput.NormalName" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="ProfileInput.Phone" class="form-label">Số điện thoại</label>
+                                                <input asp-for="ProfileInput.Phone" class="form-control" />
+                                                <span asp-validation-for="ProfileInput.Phone" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label asp-for="ProfileInput.Address" class="form-label">Địa chỉ</label>
+                                        <textarea asp-for="ProfileInput.Address" class="form-control" rows="3"></textarea>
+                                        <span asp-validation-for="ProfileInput.Address" class="text-danger"></span>
+                                    </div>
+
+                                    <div class="d-flex gap-2">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-save me-2"></i>Cập nhật thông tin
+                                        </button>
+                                        <a href="/" class="btn btn-outline-secondary">
+                                            <i class="fas fa-home me-2"></i>Về trang chủ
+                                        </a>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security -->
+                    <div class="tab-pane fade" id="security">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-lock me-2"></i>Bảo mật
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form method="post" asp-page-handler="ChangePassword">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="PasswordInput.CurrentPassword" class="form-label">Mật khẩu hiện tại</label>
+                                                <input asp-for="PasswordInput.CurrentPassword" class="form-control" type="password" required />
+                                                <span asp-validation-for="PasswordInput.CurrentPassword" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="PasswordInput.NewPassword" class="form-label">Mật khẩu mới</label>
+                                                <input asp-for="PasswordInput.NewPassword" class="form-control" type="password" required />
+                                                <span asp-validation-for="PasswordInput.NewPassword" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="mb-3">
+                                                <label asp-for="PasswordInput.ConfirmPassword" class="form-label">Xác nhận mật khẩu mới</label>
+                                                <input asp-for="PasswordInput.ConfirmPassword" class="form-control" type="password" required />
+                                                <span asp-validation-for="PasswordInput.ConfirmPassword" class="text-danger"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fas fa-key me-2"></i>Đổi mật khẩu
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order History -->
+                    @if (!isAdmin)
+                    {
+                        <div class="tab-pane fade" id="orders">
+                            <div class="card shadow-sm">
+                                <div class="card-header bg-info text-white">
+                                    <h5 class="mb-0">
+                                        <i class="fas fa-shopping-bag me-2"></i>Lịch sử đơn hàng
+                                    </h5>
+                                </div>
+                                <div class="card-body">
+                                    @if (Model.UserOrders.Any())
+                                    {
+                                        <div class="table-responsive">
+                                            <table class="table table-hover">
+                                                <thead class="table-light">
+                                                    <tr>
+                                                        <th>Mã đơn hàng</th>
+                                                        <th>Ngày đặt</th>
+                                                        <th>Tổng tiền</th>
+                                                        <th>Trạng thái</th>
+                                                        <th>Thao tác</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @foreach (var order in Model.UserOrders)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                <strong>#@order.OrderId</strong>
+                                                            </td>
+                                                            <td>@order.OrderDate.ToString("dd/MM/yyyy HH:mm")</td>
+                                                            <td>
+                                                                <span class="text-primary fw-bold">@order.TotalAmount?.ToString("N0") đ</span>
+                                                            </td>
+                                                            <td>
+                                                                @{
+                                                                    var statusClass = order.Status switch
+                                                                    {
+                                                                        "PendingPayment" => "badge bg-warning",
+                                                                        "AwaitingConfirmation" => "badge bg-info",
+                                                                        "Confirmed" => "badge bg-primary",
+                                                                        "Shipped" => "badge bg-secondary",
+                                                                        "Delivered" => "badge bg-success",
+                                                                        "Cancelled" => "badge bg-danger",
+                                                                        _ => "badge bg-secondary"
+                                                                    };
+                                                                    var statusText = order.Status switch
+                                                                    {
+                                                                        "PendingPayment" => "Chờ thanh toán",
+                                                                        "AwaitingConfirmation" => "Chờ xác nhận",
+                                                                        "Confirmed" => "Đã xác nhận",
+                                                                        "Shipped" => "Đang giao",
+                                                                        "Delivered" => "Đã giao",
+                                                                        "Cancelled" => "Đã hủy",
+                                                                        _ => order.Status
+                                                                    };
+                                                                }
+                                                                <span class="@statusClass">@statusText</span>
+                                                            </td>
+                                                            <td>
+                                                                <a href="/UserSite/OrderDetails?id=@order.OrderId" class="btn btn-sm btn-outline-primary">
+                                                                    <i class="fas fa-eye me-1"></i>Xem chi tiết
+                                                                </a>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-center py-4">
+                                            <i class="fas fa-shopping-bag fa-3x text-muted mb-3"></i>
+                                            <h5 class="text-muted">Chưa có đơn hàng nào</h5>
+                                            <p class="text-muted">Bạn chưa có đơn hàng nào. Hãy mua sắm ngay!</p>
+                                            <a href="/products" class="btn btn-primary">
+                                                <i class="fas fa-shopping-cart me-2"></i>Mua sắm ngay
+                                            </a>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        const isLoggedIn = @(Model.isLoggedIn ? "true" : "false");
+        
+        // Badge sẽ được khởi tạo tự động bởi site.js
+        
+        // Form validation and submission
+        function validateForm() {
+            const password = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (password && password !== confirmPassword) {
+                alert('Mật khẩu xác nhận không khớp!');
+                return false;
+            }
+            
+            if (password && password.length < 6) {
+                alert('Mật khẩu phải có ít nhất 6 ký tự!');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Show/hide password
+        function togglePasswordVisibility(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.className = 'fas fa-eye-slash';
+            } else {
+                input.type = 'password';
+                icon.className = 'fas fa-eye';
+            }
+        }
+        
+        // Tab switching
+        function switchTab(tabName) {
+            // Hide all tab contents
+            const tabContents = document.querySelectorAll('.tab-content');
+            tabContents.forEach(content => content.style.display = 'none');
+            
+            // Remove active class from all tab buttons
+            const tabButtons = document.querySelectorAll('.tab-button');
+            tabButtons.forEach(button => button.classList.remove('active'));
+            
+            // Show selected tab content
+            document.getElementById(tabName).style.display = 'block';
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+    </script>
+} 

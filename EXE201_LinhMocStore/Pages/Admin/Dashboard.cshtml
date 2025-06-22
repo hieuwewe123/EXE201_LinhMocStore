@@ -2,66 +2,219 @@
 @model EXE201_LinhMocStore.Pages.Admin.DashboardModel
 @{
     Layout = "~/Pages/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Dashboard - Admin";
 }
-<h1 class="mt-4">Dashboard</h1>
-<ol class="breadcrumb mb-4">
-    <li class="breadcrumb-item active">Dashboard</li>
-</ol>
-<div class="row">
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-primary text-white mb-4">
-            <div class="card-body">Product</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/admin/product">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+
+<div class="container-fluid px-4">
+    <h1 class="mt-4">
+        <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+    </h1>
+    <ol class="breadcrumb mb-4">
+        <li class="breadcrumb-item active">Dashboard</li>
+    </ol>
+
+    <!-- Thống kê tổng quan -->
+    <div class="row">
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-primary text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small">Tổng sản phẩm</div>
+                            <div class="h4 mb-0">@Model.TotalProducts</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-gem fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/admin/product">Xem chi tiết</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-warning text-white mb-4">
-            <div class="card-body">Category</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/admin/category">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-warning text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small">Tổng đơn hàng</div>
+                            <div class="h4 mb-0">@Model.TotalOrders</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-shopping-cart fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/admin/order">Xem chi tiết</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-success text-white mb-4">
-            <div class="card-body">User</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/admin/user">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-success text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small">Tổng khách hàng</div>
+                            <div class="h4 mb-0">@Model.TotalUsers</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-users fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/admin/user">Xem chi tiết</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-danger text-white mb-4">
-            <div class="card-body">Order</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/admin/order">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-info text-white mb-4">
-            <div class="card-body">Blog</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/admin/blog">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xl-3 col-md-6">
-        <div class="card bg-secondary text-white mb-4">
-            <div class="card-body">Payment</div>
-            <div class="card-footer d-flex align-items-center justify-content-between">
-                <a class="small text-white stretched-link" href="/admin/payment">View Details</a>
-                <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+        <div class="col-xl-3 col-md-6">
+            <div class="card bg-info text-white mb-4">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <div class="small">Tổng bài viết</div>
+                            <div class="h4 mb-0">@Model.TotalBlogs</div>
+                        </div>
+                        <div class="align-self-center">
+                            <i class="fas fa-blog fa-2x"></i>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer d-flex align-items-center justify-content-between">
+                    <a class="small text-white stretched-link" href="/admin/blog">Xem chi tiết</a>
+                    <div class="small text-white"><i class="fas fa-angle-right"></i></div>
+                </div>
             </div>
         </div>
     </div>
 
-
+    <!-- Thống kê đơn hàng -->
+    <div class="row">
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-pie me-1"></i>
+                    Trạng thái đơn hàng
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-warning rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-clock text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="h6 mb-0">@Model.PendingPaymentOrders</div>
+                                    <small class="text-muted">Chờ thanh toán</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-check-circle text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="h6 mb-0">@Model.AwaitingConfirmationOrders</div>
+                                    <small class="text-muted">Chờ xác nhận</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-truck text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="h6 mb-0">@Model.ShippedOrders</div>
+                                    <small class="text-muted">Đang giao</small>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="bg-success rounded-circle d-flex align-items-center justify-content-center me-3" style="width: 40px; height: 40px;">
+                                    <i class="fas fa-check-double text-white"></i>
+                                </div>
+                                <div>
+                                    <div class="h6 mb-0">@Model.DeliveredOrders</div>
+                                    <small class="text-muted">Đã giao</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-xl-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="fas fa-chart-bar me-1"></i>
+                    Đơn hàng gần đây
+                </div>
+                <div class="card-body">
+                    @if (Model.RecentOrders.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Mã ĐH</th>
+                                        <th>Khách hàng</th>
+                                        <th>Trạng thái</th>
+                                        <th>Tổng tiền</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var order in Model.RecentOrders.Take(5))
+                                    {
+                                        <tr>
+                                            <td><strong>#@order.OrderId</strong></td>
+                                            <td>@order.User?.NormalName</td>
+                                            <td>
+                                                @{
+                                                    var statusClass = order.Status switch
+                                                    {
+                                                        "PendingPayment" => "badge bg-warning",
+                                                        "AwaitingConfirmation" => "badge bg-info",
+                                                        "Confirmed" => "badge bg-primary",
+                                                        "Shipped" => "badge bg-secondary",
+                                                        "Delivered" => "badge bg-success",
+                                                        "Cancelled" => "badge bg-danger",
+                                                        _ => "badge bg-secondary"
+                                                    };
+                                                    var statusText = order.Status switch
+                                                    {
+                                                        "PendingPayment" => "Chờ thanh toán",
+                                                        "AwaitingConfirmation" => "Chờ xác nhận",
+                                                        "Confirmed" => "Đã xác nhận",
+                                                        "Shipped" => "Đang giao",
+                                                        "Delivered" => "Đã giao",
+                                                        "Cancelled" => "Đã hủy",
+                                                        _ => order.Status
+                                                    };
+                                                }
+                                                <span class="@statusClass">@statusText</span>
+                                            </td>
+                                            <td>@order.TotalAmount?.ToString("N0") đ</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="text-center">
+                            <a href="/admin/order" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-eye me-1"></i>Xem tất cả đơn hàng
+                            </a>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted text-center">Chưa có đơn hàng nào</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

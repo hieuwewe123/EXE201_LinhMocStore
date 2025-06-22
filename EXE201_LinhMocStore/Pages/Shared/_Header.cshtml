@@ -7,9 +7,9 @@
     var userRole = HttpContextAccessor.HttpContext?.Session.GetString("UserRole");
     var userId = HttpContextAccessor.HttpContext?.Session.GetInt32("UserId");
     
-    // Tính số lượng sản phẩm trong giỏ hàng nếu đã đăng nhập
+    // Tính số lượng sản phẩm trong giỏ hàng nếu đã đăng nhập và không phải admin
     int cartItemCount = 0;
-    if (!string.IsNullOrEmpty(username) && userId.HasValue)
+    if (!string.IsNullOrEmpty(username) && userId.HasValue && userRole != "Admin")
     {
         var cart = _context.Carts.FirstOrDefault(c => c.UserId == userId.Value);
         if (cart != null)
@@ -60,14 +60,17 @@
                     
                     @if (!string.IsNullOrEmpty(username))
                     {
-                        <li class="nav-item">
-                            <a class="nav-link hover-effect fs-5 position-relative" href="/UserSite/Cart">
-                                <i class="fas fa-shopping-cart me-1"></i>Giỏ hàng
-                                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartBadge">
-                                    @cartItemCount
-                                </span>
-                            </a>
-                        </li>
+                        @if (userRole != "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link hover-effect fs-5 position-relative" href="/UserSite/Cart">
+                                    <i class="fas fa-shopping-cart me-1"></i>Giỏ hàng
+                                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="cartBadge" style="display: none;">
+                                        @cartItemCount
+                                    </span>
+                                </a>
+                            </li>
+                        }
                         
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
@@ -78,8 +81,11 @@
                             </a>
                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                                 <li><a class="dropdown-item" href="/profile"><i class="fas fa-user me-2"></i>Hồ sơ</a></li>
-                                <li><a class="dropdown-item" href="/UserSite/MyOrders"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi</a></li>
-                                <li><hr class="dropdown-divider"></li>
+                                @if (userRole != "Admin")
+                                {
+                                    <li><a class="dropdown-item" href="/UserSite/MyOrders"><i class="fas fa-shopping-bag me-2"></i>Đơn hàng của tôi</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                }
                                 @if (userRole == "Admin")
                                 {
                                     <li><a class="dropdown-item text-warning" href="/admin"><i class="fas fa-cog me-2"></i>Quản trị</a></li>

@@ -23,6 +23,9 @@ namespace EXE201_LinhMocStore.Pages.Products
         public Product? Product { get; set; }
         public List<Product>? RelatedProducts { get; set; }
         public string? Message { get; set; }
+        public bool isLoggedIn { get; set; }
+        public bool isAdmin { get; set; }
+        public User? CurrentUser { get; set; }
 
         public async Task<IActionResult> OnGetAsync(int id)
         {
@@ -51,11 +54,33 @@ namespace EXE201_LinhMocStore.Pages.Products
                 .Take(3)
                 .ToListAsync();
 
+            // Set login status
+            var username = HttpContext.Session.GetString("Username");
+            isLoggedIn = !string.IsNullOrEmpty(username);
+            
+            // Set admin status
+            var userRole = HttpContext.Session.GetString("UserRole");
+            isAdmin = userRole == "Admin";
+
+            // Load current user info if logged in
+            if (isLoggedIn && HttpContext.Session.GetInt32("UserId") != null)
+            {
+                CurrentUser = await _context.Users.FindAsync(HttpContext.Session.GetInt32("UserId"));
+            }
+
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync(int productId, int quantity)
         {
+            // Kiểm tra quyền admin
+            var userRole = HttpContext.Session.GetString("UserRole");
+            if (userRole == "Admin")
+            {
+                TempData["Error"] = "Admin không thể thêm sản phẩm vào giỏ hàng";
+                return RedirectToPage(new { id = productId });
+            }
+
             // 👉 Kiểm tra đăng nhập bằng Session
             var username = HttpContext.Session.GetString("Username");
             var userId = HttpContext.Session.GetInt32("UserId");
@@ -117,6 +142,13 @@ namespace EXE201_LinhMocStore.Pages.Products
 
         public async Task<IActionResult> OnPostAddToCartAjaxAsync()
         {
+            // Kiểm tra quyền admin
+            var userRole = HttpContext.Session.GetString("UserRole");
+            if (userRole == "Admin")
+            {
+                return new JsonResult(new { success = false, message = "Admin không thể thêm sản phẩm vào giỏ hàng." });
+            }
+
             var username = HttpContext.Session.GetString("Username");
             var userId = HttpContext.Session.GetInt32("UserId");
 
@@ -176,6 +208,27 @@ namespace EXE201_LinhMocStore.Pages.Products
             {
                 return new JsonResult(new { success = false, message = "Dữ liệu không hợp lệ." });
             }
+        }
+
+        public async Task<IActionResult> OnPostGetCartCountAsync()
+        {
+            var userId = HttpContext.Session.GetInt32("UserId");
+            if (!userId.HasValue)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cart = await _context.Carts.FirstOrDefaultAsync(c => c.UserId == userId.Value);
+            if (cart == null)
+            {
+                return new JsonResult(new { count = 0 });
+            }
+
+            var cartItemCount = await _context.CartItems
+                .Where(ci => ci.CartId == cart.CartId)
+                .SumAsync(ci => ci.Quantity);
+
+            return new JsonResult(new { count = cartItemCount });
         }
 
         public class AddToCartRequest

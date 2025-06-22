@@ -19,22 +19,26 @@ namespace EXE201_LinhMocStore.Pages.Admin.Payment
             _context = context;
         }
 
-        public async Task OnGetAsync()
-        {
-            Orders = await _context.Orders.Include(o => o.User).ToListAsync();
-        }
-        public IActionResult OnGet()
+        public async Task<IActionResult> OnGetAsync()
         {
             var role = HttpContext.Session.GetString("UserRole");
             if (role != "Admin")
             {
                 return RedirectToPage("/Login");
             }
+
+            Orders = await _context.Orders.Include(o => o.User).ToListAsync();
             return Page();
         }
 
         public async Task<IActionResult> OnPostAsync()
         {
+            var role = HttpContext.Session.GetString("UserRole");
+            if (role != "Admin")
+            {
+                return RedirectToPage("/Login");
+            }
+
             if (!ModelState.IsValid)
             {
                 Orders = await _context.Orders.Include(o => o.User).ToListAsync();

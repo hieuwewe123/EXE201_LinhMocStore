@@ -8,6 +8,16 @@
     <meta name="keywords" content="phong thủy, vòng đá, vòng gỗ, trang sức, may mắn, tài lộc" />
     <title>@ViewData["Title"] - Linh Mộc Store</title>
 
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-V691R7LJWK"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-V691R7LJWK');
+    </script>
+
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="~/favicon.png" />
     
@@ -118,6 +128,8 @@
     <!-- Additional Scripts -->
     @await RenderSectionAsync("Scripts", required: false)
     
+    <div id="toast-container"></div>
+
     <script>
         // Back to Top Button
         const backToTopButton = document.getElementById('backToTop');

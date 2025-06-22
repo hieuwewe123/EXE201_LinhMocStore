@@ -29,8 +29,8 @@ body {
 /* Focus Styles */
 .btn:focus, .btn:active:focus, .btn-link.nav-link:focus, 
 .form-control:focus, .form-check-input:focus {
-    box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
-    border-color: #3498db;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    border-color: #667eea;
 }
 
 /* Header Styles */
@@ -129,6 +129,30 @@ body {
 .btn-danger:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #343a40 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(108, 117, 125, 0.4);
+    color: white;
+}
+
+.btn-info {
+    background: linear-gradient(135deg, #17a2b8 0%, #0d6efd 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+}
+
+.btn-info:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(23, 162, 184, 0.4);
+    color: white;
 }
 
 /* Main Content */
@@ -570,4 +594,176 @@ body {
     .carousel {
         scroll-behavior: auto;
     }
+}
+
+/* Toast Container - New */
+#toast-container {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 10px;
+    pointer-events: none; /* Pass clicks through the container */
+}
+
+/* Toast Message Styles - Updated */
+.toast-message {
+    background-color: #333;
+    color: white;
+    padding: 15px 25px;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+    font-weight: 500;
+    opacity: 0;
+    transform: translateX(120%);
+    transition: transform 0.4s ease-in-out, opacity 0.4s ease-in-out;
+    width: 320px;
+    max-width: 90vw; /* Responsive on small screens */
+    pointer-events: auto; /* Capture clicks on the toast itself */
+}
+
+.toast-message.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-message.error {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.toast-message.success {
+    background-color: #2ecc71;
+    color: white;
+}
+
+/* Quantity Selector Styles */
+.quantity-selector .input-group {
+    display: flex;
+    flex-wrap: nowrap;
+    max-width: 160px;
+}
+
+.quantity-selector .btn {
+    border: none;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    font-weight: bold;
+    min-width: 40px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+    border-radius: 8px;
+    z-index: 2;
+    position: relative;
+}
+
+.quantity-selector .btn:hover {
+    background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+    color: white;
+}
+
+.quantity-selector .btn:active {
+    background: linear-gradient(135deg, #4f64c6 0%, #5f377e 100%);
+    transform: translateY(0);
+    box-shadow: 0 2px 10px rgba(102, 126, 234, 0.3);
+}
+
+.quantity-selector .form-control {
+    text-align: center;
+    border: 1px solid #dee2e6;
+    font-weight: 500;
+    background: white;
+    color: #495057;
+    font-size: 1rem;
+    padding: 0.5rem;
+    flex: 1 1 auto;
+    width: 1%;
+    min-width: 50px;
+    border-radius: 0;
+    margin: 0 -1px;
+}
+
+.quantity-selector .btn:first-of-type {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.quantity-selector .btn:last-of-type {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.quantity-selector .form-control:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    outline: none;
+    z-index: 3;
+    position: relative;
+}
+
+.quantity-selector .form-control::-webkit-outer-spin-button,
+.quantity-selector .form-control::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-selector .form-control[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Product Details Styles */
+.product-details {
+    background: white;
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-title {
+    color: #2c3e50;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.product-price {
+    color: #e74c3c;
+    font-weight: 700;
+}
+
+.product-meta .meta-item {
+    margin-bottom: 0.5rem;
+    color: #6c757d;
+}
+
+.product-meta .meta-item i {
+    width: 20px;
+    color: #667eea;
+}
+
+.product-description {
+    border-top: 1px solid #e9ecef;
+    padding-top: 1rem;
+}
+
+.product-description h5 {
+    color: #2c3e50;
+    margin-bottom: 1rem;
+}
+
+.product-image-container {
+    background: white;
+    padding: 1rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.product-main-image {
+    width: 100%;
+    height: auto;
+    border-radius: 10px;
 }
