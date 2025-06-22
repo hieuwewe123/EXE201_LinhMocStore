@@ -29,7 +29,6 @@
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="SQL\" />
-    <Folder Include="wwwroot\images\" />
   </ItemGroup>
 
 </Project>

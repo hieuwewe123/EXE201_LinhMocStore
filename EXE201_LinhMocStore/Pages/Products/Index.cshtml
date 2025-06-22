@@ -38,18 +38,37 @@
                 <!-- Material Filter -->
                 <div class="filter-section mb-4">
                     <h5 class="filter-section-title">Chất liệu</h5>
-                    <div class="material-filters">
-                        @foreach (var material in Model.Materials)
+                    <form method="get" id="materialFilterForm">
+                        <div class="material-filters">
+                            @foreach (var material in Model.Materials)
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" name="materials" value="@material" 
+                                           id="material-@material" @(Model.SelectedMaterials?.Contains(material) == true ? "checked" : "")>
+                                    <label class="form-check-label" for="material-@material">
+                                        @material
+                                    </label>
+                                </div>
+                            }
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.SearchTerm))
                         {
-                            <div class="form-check">
-                                <input class="form-check-input" type="checkbox" name="materials" value="@material" 
-                                       id="material-@material" @(Model.SelectedMaterials?.Contains(material) == true ? "checked" : "")>
-                                <label class="form-check-label" for="material-@material">
-                                    @material
-                                </label>
-                            </div>
+                            <input type="hidden" name="searchTerm" value="@Model.SearchTerm" />
                         }
-                    </div>
+                        @if (Model.MinPrice.HasValue)
+                        {
+                            <input type="hidden" name="minPrice" value="@Model.MinPrice" />
+                        }
+                        @if (Model.MaxPrice.HasValue)
+                        {
+                            <input type="hidden" name="maxPrice" value="@Model.MaxPrice" />
+                        }
+                        @if (!string.IsNullOrEmpty(Model.SortBy))
+                        {
+                            <input type="hidden" name="sortBy" value="@Model.SortBy" />
+                        }
+                        <button type="submit" class="btn btn-outline-primary w-100 mt-3">Áp dụng bộ lọc</button>
+                    </form>
                 </div>
             </div>
         </div>
@@ -289,40 +308,4 @@
             color: #3498db;
         }
     </style>
-}
-
-@section Scripts {
-    <script>
-        // Auto submit form when material checkboxes change
-        document.querySelectorAll('input[name="materials"]').forEach(checkbox => {
-            checkbox.addEventListener('change', function() {
-                const form = document.createElement('form');
-                form.method = 'get';
-                
-                // Add all current query parameters
-                const urlParams = new URLSearchParams(window.location.search);
-                for (const [key, value] of urlParams.entries()) {
-                    if (key !== 'materials') {
-                        const input = document.createElement('input');
-                        input.type = 'hidden';
-                        input.name = key;
-                        input.value = value;
-                        form.appendChild(input);
-                    }
-                }
-                
-                // Add all checked materials
-                document.querySelectorAll('input[name="materials"]:checked').forEach(checked => {
-                    const input = document.createElement('input');
-                    input.type = 'hidden';
-                    input.name = 'materials';
-                    input.value = checked.value;
-                    form.appendChild(input);
-                });
-                
-                document.body.appendChild(form);
-                form.submit();
-            });
-        });
-    </script>
 } 

@@ -20,14 +20,18 @@ CREATE TABLE Payment ( PaymentID INT PRIMARY KEY IDENTITY(1,1), OrderID INT FORE
 -- Tạo bảng Notification 
 CREATE TABLE Notification ( NotificationID INT PRIMARY KEY IDENTITY(1,1), UserID INT FOREIGN KEY REFERENCES UserID, Content NVARCHAR(500), Status NVARCHAR(20), CreatedAt DATETIME );
 -- Tạo bảng Blog 
-CREATE TABLE Blog ( BlogID INT PRIMARY KEY IDENTITY(1,1), Title NVARCHAR(200) NOT NULL, Content NVARCHAR(MAX), CreatedAt DATETIME NOT NULL DEFAULT GETDATE() );
+CREATE TABLE Blog (
+    BlogID INT PRIMARY KEY IDENTITY(1,1),
+    Title NVARCHAR(200) NOT NULL,
+    Content NVARCHAR(MAX),
+    CreatedAt DATETIME NOT NULL DEFAULT GETDATE(),
+    Image NVARCHAR(255) NULL,
+    Author NVARCHAR(100) NULL,
+    Summary NVARCHAR(500) NULL,
+    IsFeatured BIT NOT NULL DEFAULT 0,
+    IsActive BIT NOT NULL DEFAULT 1
+);
 
-ALTER TABLE Blog
-ADD Image nvarchar(255) NULL,
-    Author nvarchar(100) NULL,
-    Summary nvarchar(500) NULL,
-    IsFeatured bit NOT NULL DEFAULT 0,
-    IsActive bit NOT NULL DEFAULT 1;
     
 -- =========================== -- Insert dữ liệu mẫu -- ===========================
 -- Category 
@@ -64,7 +68,6 @@ INSERT INTO Payment (OrderID, Content, Price, TransactionCode, Status, CreatedAt
 -- Notification
 INSERT INTO Notification (UserID, Content, Status, CreatedAt) VALUES (2, N'Đơn hàng của bạn đã được xác nhận.', N'Chưa đọc', GETDATE());
 -- Blog 
-INSERT INTO Blog (Title, Content) VALUES (N'Cách chọn vòng phong thủy hợp mệnh', N'Nội dung bài viết về cách chọn vòng phong thủy...');-- Thêm các bài viết blog mẫu
 INSERT INTO Blog (Title, Content, CreatedAt, Image, Author, Summary, IsFeatured, IsActive)
 VALUES 
 (
@@ -89,7 +92,7 @@ Lưu ý khi sử dụng:
 - Không nên để vòng tiếp xúc với nước hoặc hóa chất
 - Nên tháo vòng khi đi ngủ để vòng được "nghỉ ngơi"',
     GETDATE(),
-    '/images/blogs/huyet-long.jpg',
+    '/images/blog/huyet-long.jpg',
     N'Phong Thủy Sư',
     N'Vòng gỗ huyết long là một trong những loại vòng phong thủy được ưa chuộng nhất hiện nay. Bài viết sẽ giúp bạn hiểu rõ về ý nghĩa và cách sử dụng vòng gỗ huyết long trong phong thủy.',
     1,
@@ -127,7 +130,7 @@ Các loại đá phong thủy phổ biến:
 4. Mã não: Bảo vệ sức khỏe và xua đuổi tà khí
 5. Ngọc bích: Mang lại bình an và thịnh vượng',
     GETDATE(),
-    '/images/blogs/da-phong-thuy.jpg',
+    '/images/blog/da-phong-thuy.jpg',
     N'Chuyên Gia Đá Quý',
     N'Bài viết hướng dẫn chi tiết cách phân biệt vòng đá phong thủy thật và giả, giúp bạn tránh mua phải hàng kém chất lượng và đảm bảo hiệu quả phong thủy.',
     1,
@@ -168,7 +171,7 @@ Lưu ý khi chọn vòng:
 - Chất liệu tự nhiên, không bị nhuộm màu
 - Nguồn gốc rõ ràng, đảm bảo chất lượng',
     GETDATE(),
-    '/images/blogs/vong-theo-menh.jpg',
+    '/images/blog/vong-theo-menh.jpg',
     N'Phong Thủy Sư',
     N'Bài viết hướng dẫn chi tiết cách chọn vòng phong thủy phù hợp với từng mệnh, giúp bạn tăng cường vận khí và may mắn trong cuộc sống.',
     1,

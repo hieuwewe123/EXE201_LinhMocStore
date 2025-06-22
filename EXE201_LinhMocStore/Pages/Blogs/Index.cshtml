@@ -1,0 +1,230 @@
+@page
+@model EXE201_LinhMocStore.Pages.Blogs.IndexModel
+@{
+    ViewData["Title"] = "Blog - Linh Mộc Store";
+    ViewData["Description"] = "Khám phá những bài viết chuyên sâu về phong thủy, vòng đá, và các sản phẩm may mắn tại Linh Mộc Store";
+}
+
+<!-- Blog Hero Section -->
+<section class="blog-hero">
+    <div class="container">
+        <div class="row justify-content-center text-center">
+            <div class="col-lg-8">
+                <div class="blog-hero-content">
+                    <h1 class="animate__animated animate__fadeInUp">Blog Linh Mộc</h1>
+                    <p class="animate__animated animate__fadeInUp animate__delay-1s">
+                        Khám phá bí mật phong thủy, kiến thức về vòng đá quý và những câu chuyện thú vị về may mắn, tài lộc
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Blog Container -->
+<section class="blog-container">
+    <div class="container">
+        <!-- Search and Filters -->
+        <div class="blog-filters">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <div class="search-box">
+                        <form method="get" class="d-flex">
+                            <input type="text" name="searchTerm" class="form-control search-input" 
+                                   placeholder="Tìm kiếm bài viết..." value="@Model.SearchTerm">
+                            <button type="submit" class="btn search-btn">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-end">
+                    <div class="filter-buttons">
+                        <button class="filter-btn @(Model.Filter == "all" ? "active" : "")" 
+                                onclick="filterBlogs('all')">Tất cả</button>
+                        <button class="filter-btn @(Model.Filter == "featured" ? "active" : "")" 
+                                onclick="filterBlogs('featured')">Nổi bật</button>
+                        <button class="filter-btn @(Model.Filter == "recent" ? "active" : "")" 
+                                onclick="filterBlogs('recent')">Mới nhất</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Blog -->
+        @if (Model.FeaturedBlog != null)
+        {
+            <div class="row mb-5">
+                <div class="col-12">
+                    <div class="blog-card featured-blog-card">
+                        <div class="row g-0">
+                            <div class="col-lg-6">
+                                <div class="blog-card-image" style="background-image: url('@Model.FeaturedBlog.Image')">
+                                    <div class="blog-card-badge">Bài viết nổi bật</div>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="blog-card-content">
+                                    <div class="blog-card-category">Phong thủy</div>
+                                    <h2 class="blog-card-title">@Model.FeaturedBlog.Title</h2>
+                                    <p class="blog-card-summary">@Model.FeaturedBlog.Summary</p>
+                                    <div class="blog-card-meta">
+                                        <div class="blog-card-author">
+                                            <img src="~/images/blog/author-avatar.jpg" alt="@Model.FeaturedBlog.Author">
+                                            <span>@Model.FeaturedBlog.Author</span>
+                                        </div>
+                                        <div class="blog-card-date">
+                                            <i class="far fa-calendar-alt"></i>
+                                            @Model.FeaturedBlog.CreatedAt.ToString("dd/MM/yyyy")
+                                        </div>
+                                    </div>
+                                    <a href="/Blogs/Details/@Model.FeaturedBlog.BlogId" class="blog-card-read-more">
+                                        Đọc thêm <i class="fas fa-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        <!-- Blog Grid -->
+        <div class="row" id="blogGrid">
+            @foreach (var blog in Model.Blogs)
+            {
+                <div class="col-lg-4 col-md-6 mb-4 blog-item" data-category="@(blog.IsFeatured ? "featured" : "regular")">
+                    <div class="blog-card">
+                        <div class="blog-card-image" style="background-image: url('@blog.Image')">
+                            @if (blog.IsFeatured)
+                            {
+                                <div class="blog-card-badge">Nổi bật</div>
+                            }
+                        </div>
+                        <div class="blog-card-content">
+                            <div class="blog-card-category">Phong thủy</div>
+                            <h3 class="blog-card-title">@blog.Title</h3>
+                            <p class="blog-card-summary">@blog.Summary</p>
+                            <div class="blog-card-meta">
+                                <div class="blog-card-author">
+                                    <img src="~/images/blog/author-avatar.jpg" alt="@blog.Author">
+                                    <span>@blog.Author</span>
+                                </div>
+                                <div class="blog-card-date">
+                                    <i class="far fa-calendar-alt"></i>
+                                    @blog.CreatedAt.ToString("dd/MM/yyyy")
+                                </div>
+                            </div>
+                            <a href="/Blogs/Details/@blog.BlogId" class="blog-card-read-more">
+                                Đọc thêm <i class="fas fa-arrow-right ms-2"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Pagination -->
+        @if (Model.TotalPages > 1)
+        {
+            <div class="pagination-container">
+                <nav aria-label="Blog pagination">
+                    <ul class="pagination justify-content-center">
+                        @if (Model.CurrentPage > 1)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?page=@(Model.CurrentPage - 1)&searchTerm=@Model.SearchTerm&filter=@Model.Filter">
+                                    <i class="fas fa-chevron-left"></i>
+                                </a>
+                            </li>
+                        }
+
+                        @for (int i = Math.Max(1, Model.CurrentPage - 2); i <= Math.Min(Model.TotalPages, Model.CurrentPage + 2); i++)
+                        {
+                            <li class="page-item @(i == Model.CurrentPage ? "active" : "")">
+                                <a class="page-link" href="?page=@i&searchTerm=@Model.SearchTerm&filter=@Model.Filter">@i</a>
+                            </li>
+                        }
+
+                        @if (Model.CurrentPage < Model.TotalPages)
+                        {
+                            <li class="page-item">
+                                <a class="page-link" href="?page=@(Model.CurrentPage + 1)&searchTerm=@Model.SearchTerm&filter=@Model.Filter">
+                                    <i class="fas fa-chevron-right"></i>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                </nav>
+            </div>
+        }
+
+        <!-- No Results Message -->
+        @if (!Model.Blogs.Any())
+        {
+            <div class="text-center py-5">
+                <div class="no-results">
+                    <i class="fas fa-search fa-3x text-muted mb-3"></i>
+                    <h4>Không tìm thấy bài viết</h4>
+                    <p class="text-muted">Hãy thử tìm kiếm với từ khóa khác hoặc xem tất cả bài viết</p>
+                    <a href="/Blogs" class="btn btn-primary">Xem tất cả bài viết</a>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+@section Styles {
+    <style>
+        .featured-blog-card {
+            transform: scale(1.02);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+        
+        .no-results {
+            padding: 60px 20px;
+        }
+        
+        .filter-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+        
+        @@media (max-width: 768px) {
+            .filter-buttons {
+                justify-content: center;
+                margin-top: 20px;
+            }
+        }
+    </style>
+}
+
+@section Scripts {
+    @* <script>
+        function filterBlogs(filter) {
+            const currentUrl = new URL(window.location);
+            currentUrl.searchParams.set('filter', filter);
+            currentUrl.searchParams.delete('page'); // Reset to first page when filtering
+            window.location.href = currentUrl.toString();
+        }
+
+        // Animate blog cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate__animated', 'animate__fadeInUp');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('.blog-card').forEach(card => {
+            observer.observe(card);
+        });
+    </script> *@
+} 

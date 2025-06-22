@@ -2,7 +2,7 @@
 @model EXE201_LinhMocStore.Pages.Login.LoginModel
 @{
 	Layout = null;
-}}
+}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +41,13 @@
             color: #2c3e50;
             font-weight: 700;
             font-size: 1.8rem;
+        }
+
+        .login-subtitle {
+            text-align: center;
+            margin-bottom: 2rem;
+            color: #6c757d;
+            font-size: 1rem;
         }
 
         .form-label {
@@ -91,6 +98,17 @@
             color: #dc3545;
         }
 
+        .text-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            color: #17a2b8;
+            background-color: #d1ecf1;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 0.75rem;
+        }
+
         .forgot-password {
             text-align: center;
             margin-top: 1rem;
@@ -110,7 +128,18 @@
 <body>
     <div class="login-container">
         <h3 class="login-title">Welcome to LinhMocStore</h3>
+        
+        @if (!string.IsNullOrEmpty(Model.ReturnUrl))
+        {
+            <div class="login-subtitle">
+                <i class="fas fa-info-circle me-2"></i>
+                Vui lòng đăng nhập để tiếp tục
+            </div>
+        }
+        
         <form method="post">
+            <input type="hidden" name="ReturnUrl" value="@Model.ReturnUrl" />
+            
             <div class="mb-4">
                 <label asp-for="Input.Username" class="form-label">Username</label>
                 <input asp-for="Input.Username" class="form-control" placeholder="Enter your username" />
@@ -123,9 +152,7 @@
             <button type="submit" class="btn btn-primary btn-login">Sign In</button>
             <a href="/register" class="btn btn-outline-secondary btn-register">Register</a>
         </form>
-        @* <div class="forgot-password"> *@
-        @*     <a href="/forgot-password">Forgot your password?</a> *@
-        @* </div> *@
+        
         @if (!string.IsNullOrEmpty(Model.ErrorMessage))
         {
             <div class="text-danger">@Model.ErrorMessage</div>

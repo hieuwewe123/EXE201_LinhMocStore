@@ -1,0 +1,24 @@
+<svg width="800" height="600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#667eea;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#764ba2;stop-opacity:1" />
+    </linearGradient>
+    <pattern id="crystal" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+      <polygon points="30,5 35,25 55,30 35,35 30,55 25,35 5,30 25,25" fill="rgba(255,255,255,0.1)"/>
+    </pattern>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <rect width="800" height="600" fill="url(#crystal)"/>
+  
+  <!-- Crystal shapes -->
+  <polygon points="200,150 220,200 270,210 220,220 200,270 180,220 130,210 180,200" fill="rgba(255,255,255,0.3)"/>
+  <polygon points="600,250 620,300 670,310 620,320 600,370 580,320 530,310 580,300" fill="rgba(255,255,255,0.2)"/>
+  <polygon points="400,350 420,400 470,410 420,420 400,470 380,420 330,410 380,400" fill="rgba(255,255,255,0.25)"/>
+  
+  <!-- Text -->
+  <text x="400" y="320" font-family="Arial, sans-serif" font-size="24" fill="white" text-anchor="middle">Linh Mộc Store</text>
+  <text x="400" y="350" font-family="Arial, sans-serif" font-size="16" fill="rgba(255,255,255,0.8)" text-anchor="middle">Blog Phong Thủy</text>
+</svg> 

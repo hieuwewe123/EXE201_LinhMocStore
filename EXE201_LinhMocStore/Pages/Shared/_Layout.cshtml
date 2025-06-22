@@ -1,17 +1,44 @@
-﻿<!DOCTYPE html>
-<html lang="en">
+﻿@using Microsoft.AspNetCore.Http.Extensions
+<!DOCTYPE html>
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - EXE201_LinhMocStore</title>
+    <meta name="description" content="Linh Mộc Store - Chuyên cung cấp các sản phẩm phong thủy cao cấp, mang lại may mắn và tài lộc cho khách hàng." />
+    <meta name="keywords" content="phong thủy, vòng đá, vòng gỗ, trang sức, may mắn, tài lộc" />
+    <title>@ViewData["Title"] - Linh Mộc Store</title>
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="~/favicon.png" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <!-- Animate.css -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+    
+    <!-- Custom CSS -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/blog.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/EXE201_LinhMocStore.styles.css" asp-append-version="true" />
+    
+    <!-- Additional Styles -->
     @await RenderSectionAsync("Styles", required: false)
+    
     <style>
+        /* Layout Enhancements */
         html, body {
             height: 100%;
             margin: 0;
+            font-family: 'Inter', sans-serif;
         }
 
         body {
@@ -19,23 +46,55 @@
             flex-direction: column;
             min-height: 100vh;
             padding-top: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         }
 
         .main-content {
             flex: 1 0 auto;
             width: 100%;
+            position: relative;
         }
 
         .footer {
             flex-shrink: 0;
             width: 100%;
         }
+        
+        /* Back to Top Button */
+        .back-to-top {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .back-to-top.show {
+            display: flex;
+        }
     </style>
 </head>
 <body>
     @await Html.PartialAsync("_Header")
 
-    <div class="main-content">
+    <div class="main-content" id="mainContent">
         <div class="container-fluid">
             <main role="main" class="pb-3">
                 @RenderBody()
@@ -45,10 +104,52 @@
 
     @await Html.PartialAsync("_Footer")
 
+    <!-- Back to Top Button -->
+    <button class="back-to-top" id="backToTop" title="Lên đầu trang">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/blog.js" asp-append-version="true"></script>
 
+    <!-- Additional Scripts -->
     @await RenderSectionAsync("Scripts", required: false)
+    
+    <script>
+        // Back to Top Button
+        const backToTopButton = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopButton.classList.add('show');
+            } else {
+                backToTopButton.classList.remove('show');
+            }
+        });
+        
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 </html>

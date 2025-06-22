@@ -12,6 +12,9 @@ namespace EXE201_LinhMocStore.Pages
 
         public bool ShowRequestId => !string.IsNullOrEmpty(RequestId);
 
+        [BindProperty(SupportsGet = true)]
+        public string? Message { get; set; }
+
         private readonly ILogger<ErrorModel> _logger;
 
         public ErrorModel(ILogger<ErrorModel> logger)
@@ -24,5 +27,4 @@ namespace EXE201_LinhMocStore.Pages
             RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier;
         }
     }
-
 }

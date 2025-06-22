@@ -1,0 +1,324 @@
+@using EXE201_LinhMocStore.Models
+@model EXE201_LinhMocStore.Models.Order
+
+<div class="order-card mb-4">
+    <div class="card">
+        <div class="card-header order-card-header">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <div class="order-info">
+                        <h6 class="order-id mb-1">
+                            <i class="fas fa-hashtag me-2"></i>Đơn hàng #@Model.OrderId
+                        </h6>
+                        <small class="order-date text-muted">
+                            <i class="fas fa-calendar me-1"></i>@Model.OrderDate.ToString("dd/MM/yyyy HH:mm")
+                        </small>
+                    </div>
+                </div>
+                <div class="col-md-6 text-end">
+                    <div class="order-status">
+                        <span class="status-badge status-@Model.Status.ToLower()">
+                            @GetStatusText(Model.Status)
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card-body">
+            <div class="order-items">
+                @{
+                    var orderDetails = ViewData["OrderDetails"] as List<OrderDetail> ?? new List<OrderDetail>();
+                    var totalAmount = orderDetails.Sum(od => od.Quantity * od.Price);
+                }
+                
+                @foreach (var item in orderDetails.Take(3))
+                {
+                    <div class="order-item">
+                        <div class="row align-items-center">
+                            <div class="col-2">
+                                <img src="@(string.IsNullOrEmpty(item.Product?.Image) ? "/images/no-image.jpg" : item.Product.Image)" 
+                                     alt="@item.Product?.Name" 
+                                     class="order-item-image">
+                            </div>
+                            <div class="col-6">
+                                <h6 class="order-item-name">@item.Product?.Name</h6>
+                                <small class="order-item-material text-muted">
+                                    <i class="fas fa-gem me-1"></i>@(string.IsNullOrEmpty(item.Product?.Material) ? "Không có thông tin" : item.Product.Material)
+                                </small>
+                            </div>
+                            <div class="col-2 text-center">
+                                <span class="order-item-quantity">@item.Quantity</span>
+                            </div>
+                            <div class="col-2 text-end">
+                                <span class="order-item-price">@item.Price.ToString("N0") VNĐ</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+                
+                @if (orderDetails.Count > 3)
+                {
+                    <div class="order-more-items text-center">
+                        <small class="text-muted">
+                            Và @(orderDetails.Count - 3) sản phẩm khác...
+                        </small>
+                    </div>
+                }
+            </div>
+            
+            <hr>
+            
+            <div class="order-summary">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="order-total">
+                            <span class="total-label">Tổng tiền:</span>
+                            <span class="total-amount">@totalAmount.ToString("N0") VNĐ</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-end">
+                        <div class="order-actions">
+                            @if (Model.Status == "PendingPayment")
+                            {
+                                <a href="/UserSite/Checkout?OrderId=@Model.OrderId" class="btn btn-primary btn-sm me-2">
+                                    <i class="fas fa-credit-card me-1"></i>Tiếp tục thanh toán
+                                </a>
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="orderId" value="@Model.OrderId" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                            asp-page-handler="CancelOrder"
+                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                        <i class="fas fa-times me-1"></i>Hủy đơn
+                                    </button>
+                                </form>
+                            }
+                            else if (Model.Status == "AwaitingConfirmation")
+                            {
+                                <form method="post" style="display: inline;">
+                                    <input type="hidden" name="orderId" value="@Model.OrderId" />
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                            asp-page-handler="CancelOrder"
+                                            onclick="return confirm('Bạn có chắc chắn muốn hủy đơn hàng này?')">
+                                        <i class="fas fa-times me-1"></i>Hủy đơn
+                                    </button>
+                                </form>
+                            }
+                            else if (Model.Status == "Shipped")
+                            {
+                                <button type="button" class="btn btn-success btn-sm">
+                                    <i class="fas fa-check me-1"></i>Đã nhận hàng
+                                </button>
+                            }
+                            
+                            <a href="/UserSite/OrderDetails?orderId=@Model.OrderId" class="btn btn-outline-primary btn-sm ms-2">
+                                <i class="fas fa-eye me-1"></i>Chi tiết
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    private string GetStatusText(string status)
+    {
+        return status switch
+        {
+            "PendingPayment" => "Chờ thanh toán",
+            "AwaitingConfirmation" => "Chờ xác nhận",
+            "Processing" => "Đang xử lý",
+            "Shipped" => "Đang giao",
+            "Completed" => "Hoàn thành",
+            "Cancelled" => "Đã hủy",
+            _ => status
+        };
+    }
+}
+
+<style>
+    /* Order Card */
+    .order-card {
+        transition: all 0.3s ease;
+    }
+
+    .order-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .order-card .card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .order-card-header {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border: none;
+        padding: 1rem 1.5rem;
+    }
+
+    .order-id {
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+    }
+
+    .order-date {
+        font-size: 0.85rem;
+    }
+
+    /* Status Badges */
+    .status-badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .status-pendingpayment {
+        background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+        color: white;
+    }
+
+    .status-awaitingconfirmation {
+        background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+        color: white;
+    }
+
+    .status-processing {
+        background: linear-gradient(135deg, #007bff 0%, #6610f2 100%);
+        color: white;
+    }
+
+    .status-shipped {
+        background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+        color: white;
+    }
+
+    .status-completed {
+        background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+        color: white;
+    }
+
+    .status-cancelled {
+        background: linear-gradient(135deg, #dc3545 0%, #fd7e14 100%);
+        color: white;
+    }
+
+    /* Order Items */
+    .order-items {
+        margin-bottom: 1rem;
+    }
+
+    .order-item {
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f8f9fa;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .order-item-image {
+        width: 50px;
+        height: 50px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+
+    .order-item-name {
+        font-weight: 600;
+        margin-bottom: 0.25rem;
+        color: #2c3e50;
+    }
+
+    .order-item-material {
+        font-size: 0.8rem;
+    }
+
+    .order-item-quantity {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .order-item-price {
+        font-weight: 600;
+        color: #667eea;
+    }
+
+    .order-more-items {
+        padding: 0.5rem 0;
+        border-top: 1px solid #f8f9fa;
+    }
+
+    /* Order Summary */
+    .order-summary {
+        margin-top: 1rem;
+    }
+
+    .order-total {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .total-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+
+    .total-amount {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #2c3e50;
+    }
+
+    .order-actions {
+        display: flex;
+        gap: 0.5rem;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    /* Responsive */
+    @@media (max-width: 767.98px) {
+        .order-card-header .row {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .order-card-header .col-md-6.text-end {
+            text-align: left !important;
+        }
+        
+        .order-summary .row {
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .order-summary .col-md-6.text-end {
+            text-align: left !important;
+        }
+        
+        .order-actions {
+            justify-content: flex-start;
+        }
+        
+        .order-item .row {
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: center;
+        }
+        
+        .order-item .col-2,
+        .order-item .col-6 {
+            width: 100%;
+        }
+    }
+</style> 

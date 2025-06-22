@@ -20,9 +20,24 @@ namespace EXE201_LinhMocStore.Pages.Login
         public InputModel Input { get; set; } = new();
 
         public string? ErrorMessage { get; set; }
+        
+        [BindProperty(SupportsGet = true)]
+        public string? ReturnUrl { get; set; }
 
         public void OnGet()
         {
+            // Nếu user đã đăng nhập, chuyển hướng về trang chủ hoặc returnUrl
+            if (!string.IsNullOrEmpty(HttpContext.Session.GetString("Username")))
+            {
+                if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                {
+                    Response.Redirect(ReturnUrl);
+                }
+                else
+                {
+                    Response.Redirect("/");
+                }
+            }
         }
 
         public IActionResult OnPost()
@@ -39,7 +54,13 @@ namespace EXE201_LinhMocStore.Pages.Login
                 else
                     HttpContext.Session.SetString("UserRole", "User");
 
-                return RedirectToPage("/Index");
+                // Nếu có cartItems trong localStorage, chuyển hướng sang trang trung gian để đồng bộ
+                string syncUrl = "/UserSite/Cart?sync=1";
+                if (!string.IsNullOrEmpty(ReturnUrl) && Url.IsLocalUrl(ReturnUrl))
+                {
+                    syncUrl += "&returnUrl=" + System.Net.WebUtility.UrlEncode(ReturnUrl);
+                }
+                return Redirect(syncUrl);
             }
             else
             {
@@ -47,8 +68,6 @@ namespace EXE201_LinhMocStore.Pages.Login
                 return Page();
             }
         }
-
-
 
         public class InputModel
         {

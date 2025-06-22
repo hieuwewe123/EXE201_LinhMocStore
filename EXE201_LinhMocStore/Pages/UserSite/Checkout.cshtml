@@ -4,57 +4,118 @@
     ViewData["Title"] = "Thanh toán";
 }
 
-<h2>Thông tin thanh toán</h2>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Thông tin đơn hàng</h4>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 100px;">Hình ảnh</th>
+                                    <th>Tên sản phẩm</th>
+                                    <th class="text-end">Giá</th>
+                                    <th class="text-center">Số lượng</th>
+                                    <th class="text-end">Tổng</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.SelectedProducts)
+                                {
+                                    <tr>
+                                        <td>
+                                            <img src="@item.Product.Image" alt="@item.Product.Name" class="img-thumbnail" style="max-width: 80px;">
+                                        </td>
+                                        <td>
+                                            <a href="/products/details/@item.Product.ProductId" class="text-decoration-none text-dark">
+                                                @item.Product.Name
+                                            </a>
+                                            @if (item.Product.Quantity <= 5 && item.Product.Quantity > 0)
+                                            {
+                                                <div class="text-warning mt-1">
+                                                    <small><i class="fas fa-exclamation-triangle"></i> Chỉ còn @item.Product.Quantity sản phẩm!</small>
+                                                </div>
+                                            }
+                                            else if (item.Product.Quantity == 0)
+                                            {
+                                                <div class="text-danger mt-1">
+                                                    <small><i class="fas fa-times-circle"></i> Sản phẩm đã hết hàng!</small>
+                                                </div>
+                                            }
+                                        </td>
+                                        <td class="text-end">@item.Product.Price.ToString("N0") đ</td>
+                                        <td class="text-center">@item.Quantity</td>
+                                        <td class="text-end">@((item.Product.Price * item.Quantity).ToString("N0")) đ</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot class="table-light">
+                                <tr>
+                                    <td colspan="4" class="text-end fw-bold">Tổng cộng:</td>
+                                    <td class="text-end fw-bold fs-5">@Model.Payment.Price?.ToString("N0") đ</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Hình ảnh</th>
-            <th>Tên sản phẩm</th>
-            <th>Giá</th>
-            <th>Số lượng</th>
-            <th>Tổng</th>
-        </tr>
-    </thead>
-    <tbody>
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h4 class="mb-0">Thông tin thanh toán</h4>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title mb-3">Chuyển khoản ngân hàng</h5>
+                    <p class="text-muted mb-3">Vui lòng chuyển khoản theo thông tin bên dưới:</p>
+                    
+                    <div class="bank-info mb-4">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Ngân hàng:</span>
+                            <span class="fw-bold">@Model.bankInfo.Bank_id</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Chủ tài khoản:</span>
+                            <span class="fw-bold">@Model.bankInfo.BankName</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Số tài khoản:</span>
+                            <span class="fw-bold">@Model.bankInfo.AccountNo</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted">Nội dung chuyển khoản:</span>
+                            <span class="fw-bold text-primary">@Model.Payment.TransactionCode</span>
+                        </div>
+                    </div>
 
-        @foreach (var item in Model.SelectedProducts)
-        {
-            <tr>
-                <td><img src="@item.Product.Image" /></td>
-                <td>@item.Product.Name</td>
-                <td>@item.Product.Price.ToString("N0") vnđ</td>
-                <td>@item.Quantity</td>
-                <td>@((item.Product.Price * item.Quantity).ToString("N0")) vnđ</td>
-            </tr>
-        }
-    </tbody>
-    <tfoot>
-        <tr>
-            <td colspan="4" style="text-align: right;"><strong>Tổng cộng:</strong></td>
-            <td><strong>@Model.Payment.Price?.ToString("N0") đ</strong></td>
-        </tr>
-    </tfoot>
-</table>
+                    <div class="qr-code text-center mb-4">
+                        <h5 class="mb-3">Hoặc quét mã QR để thanh toán</h5>
+                        <img src="https://img.vietqr.io/image/@Model.bankInfo.Bank_id-@Model.bankInfo.AccountNo-qr_only.png?amount=@((int)Model.Payment.Price)&addInfo=@Model.Payment.TransactionCode" 
+                             alt="QR Code" 
+                             class="img-fluid rounded shadow-sm" 
+                             style="max-width: 250px;">
+                    </div>
 
-<hr />
-
-<h4>Chuyển khoản ngân hàng</h4>
-<p>Vui lòng chuyển khoản theo thông tin bên dưới:</p>
-<ul>
-    <li><strong>Ngân hàng:</strong> @Model.bankInfo.Bank_id</li>
-    <li><strong>Chủ tài khoản:</strong> @Model.bankInfo.BankName</li>
-    <li><strong>Số tài khoản:</strong> @Model.bankInfo.AccountNo</li>
-    <li><strong>Nội dung chuyển khoản:</strong> @Model.Payment.TransactionCode</li>
-</ul>
-
-<h5>Hoặc quét mã QR để thanh toán:</h5>
-<img src="https://img.vietqr.io/image/@Model.bankInfo.Bank_id-@Model.bankInfo.AccountNo-qr_only.png?amount=@((int)Model.Payment.Price)&addInfo=@Model.Payment.TransactionCode" alt="QR Code" style="width: 250px;" />
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Sau khi chuyển khoản thành công, đơn hàng của bạn sẽ được xử lý trong thời gian sớm nhất.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
 <form id="PaymentSuccess" hidden method="post">
     <input name="paymentId" value="@Model.Payment.PaymentId" />
     <input name="orderId" value="@Model.Order.OrderId" />
 </form>
+
 @section Scripts {
     <script>
         async function checkPaid(price, content) {
@@ -75,9 +136,69 @@
             }
         }
 
-
         setInterval(() => {
-        checkPaid("@Model.Payment.Price", "@Model.Payment.TransactionCode");
-            }, 1000);
+            checkPaid("@Model.Payment.Price", "@Model.Payment.TransactionCode");
+        }, 1000);
     </script>
+}
+
+@section Styles {
+    <style>
+        body {
+            padding-top: 76px !important;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%) !important;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 0.5rem;
+        }
+
+        .card-header {
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+            padding: 1rem 1.5rem;
+        }
+
+        .img-thumbnail {
+            border-radius: 0.25rem;
+            transition: transform 0.2s;
+        }
+
+        .img-thumbnail:hover {
+            transform: scale(1.05);
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+        }
+
+        .text-danger {
+            color: #dc3545 !important;
+        }
+
+        .bank-info {
+            background: #f8f9fa;
+            padding: 1rem;
+            border-radius: 0.5rem;
+        }
+
+        .alert-info {
+            background-color: #e8f4f8;
+            border-color: #bee5eb;
+            color: #0c5460;
+        }
+
+        .qr-code img {
+            transition: transform 0.2s;
+        }
+
+        .qr-code img:hover {
+            transform: scale(1.05);
+        }
+    </style>
 }
